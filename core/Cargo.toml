@@ -1,0 +1,34 @@
+[package]
+name = "door-core"
+version = "0.1.0"
+authors = ["baiyan"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "2.33.0"
+
+include_dir = "0.2.1"
+
+serde = "1.0.101"
+serde_derive = "1.0.101"
+serde_json = "1.0.41"
+
+log = "0.4.8"
+simplelog = "0.7.4"
+
+colored = "1.8.0"
+regex = "1.3.1"
+
+chrono = { version = "0.4.9", features = ["serde"] }
+uuid = { version = "0.7.4", features = ["serde","v4"] }
+
+handlebars = "2.0.2"
+
+lazy_static = "1.4.0"
+itertools = "0.8"
+
+[dev-dependencies]
+tester = { path = "../tester" }
+
