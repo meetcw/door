@@ -3,7 +3,8 @@ use std::io::{Read, Write};
 use std::path::Path;
 
 use crate::entity::SiteEntity;
-use crate::infrastructure::{Environment, Error};
+use crate::infrastructure::{Environment, Error, RESOURCE};
+use crate::template::{DefaultRenderer, Renderer};
 
 type Result<T> = std::result::Result<T, Error>;
 
@@ -33,25 +34,36 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
                         .with_inner_error(&err)
                 })?;
         }
-        let config_path = path.join("site.json");
-        if config_path.exists() && config_path.is_file() {
+        let site_config_path = path.join("site.json");
+        if site_config_path.exists() && site_config_path.is_file() {
             return Err(Error::new(
                 "Failed to create a new site. because a site exists in the current directory.",
             ));
         }
         let mut site = serde_json::from_str::<SiteEntity>("{}").unwrap();
-        let mut config_file = File::create(config_path).map_err(|err| {
-            Error::new("An error occurred while creating the config file.")
-                .with_inner_error(&err)
-        })?;
-        let content = serde_json::to_string_pretty(&site).map_err(|err| {
-            Error::new("An error occurred while converting the config content.")
-                .with_inner_error(&err)
-        })?;
-        config_file.write(&content.into_bytes()).map_err(|err| {
-            Error::new("An error occurred while writing the config file.")
-                .with_inner_error(&err)
-        })?;
+
+        let mut site_config_file =
+            File::create(site_config_path).map_err(|err| {
+                Error::new("An error occurred while creating the config file.")
+                    .with_inner_error(&err)
+            })?;
+        let renderer = DefaultRenderer::new();
+        let content = renderer
+            .render_template(
+                RESOURCE
+                    .get_file("site_template/site.json.hbs")
+                    .unwrap()
+                    .contents_utf8()
+                    .unwrap(),
+                &site,
+            )
+            .unwrap();
+        site_config_file
+            .write(&content.into_bytes())
+            .map_err(|err| {
+                Error::new("An error occurred while writing the config file.")
+                    .with_inner_error(&err)
+            })?;
         site.root = std::fs::canonicalize(&self.environment.workspace)
             .unwrap()
             .to_str()

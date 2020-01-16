@@ -1,15 +1,14 @@
+use crate::entity::{ContentEntity, SiteEntity};
+use crate::infrastructure::{utilities, Environment, Error, RESOURCE};
+use crate::model::Site;
+use crate::template::{DefaultRenderer, Renderer};
+use colored::*;
+use regex::Regex;
+use serde::de::Unexpected::Str;
 use std::fs::{self, DirBuilder, File};
 use std::io;
 use std::io::{Read, Write};
 use std::path::Path;
-
-use colored::*;
-use regex::Regex;
-
-use crate::entity::{ContentEntity, SiteEntity};
-use crate::infrastructure::{utilities, Environment, Error};
-use crate::model::Site;
-use serde::de::Unexpected::Str;
 
 type Result<T> = std::result::Result<T, Error>;
 
@@ -119,19 +118,17 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         let mut content = serde_json::from_str::<ContentEntity>("{}").unwrap();
         content.path = String::from(filename);
         content.target = String::from(target);
-        let mut value = serde_json::to_value(content.clone()).unwrap();
-        let map = value.as_object_mut().unwrap();
-        map.remove("content").unwrap();
-        let mark = serde_json::to_string_pretty(&map)
-            .map_err(|err| {
-                Error::new("An error occurred while save file.")
-                    .with_inner_error(&err)
-            })?
-            .to_string();
-        let data = format!(
-            "``````` json\r\n{}\r\n```````\r\n{}",
-            mark, content.content
-        );
+        let renderer = DefaultRenderer::new();
+        let data = renderer
+            .render_template(
+                RESOURCE
+                    .get_file("site_template/content.md.hbs")
+                    .unwrap()
+                    .contents_utf8()
+                    .unwrap(),
+                &content,
+            )
+            .unwrap();
         file.write_all(&mut data.into_bytes()).map_err(|err| {
             Error::new("An error occurred while save file.")
                 .with_inner_error(&err)
