@@ -11,6 +11,7 @@ use crate::infrastructure::{utilities, Error};
 
 use super::FileHelper;
 use crate::template::helper_json::JsonHelper;
+use serde::Serialize;
 
 type Result<T> = std::result::Result<T, Error>;
 
@@ -25,13 +26,17 @@ pub trait Renderer {
     fn get_templates(&self) -> Vec<String>;
     fn get_major_templates(&self) -> Vec<String>;
     fn get_component_templates(&self) -> Vec<String>;
-    fn render(
+    fn render<T>(
         &self,
         name: &str,
-        data: &Value,
-    ) -> Result<HashMap<String, String>>;
+        data: &T,
+    ) -> Result<HashMap<String, String>>
+    where
+        T: Serialize;
 
-    fn render_template(&self, template: &str, data: &Value) -> Result<String>;
+    fn render_template<T>(&self, template: &str, data: &T) -> Result<String>
+    where
+        T: Serialize;
 }
 
 pub struct DefaultRenderer {
@@ -114,11 +119,10 @@ impl Renderer for DefaultRenderer {
         }
         return keys;
     }
-    fn render(
-        &self,
-        name: &str,
-        data: &Value,
-    ) -> Result<HashMap<String, String>> {
+    fn render<T>(&self, name: &str, data: &T) -> Result<HashMap<String, String>>
+    where
+        T: Serialize,
+    {
         self.handlebars.render(name, data).unwrap();
         let mut writeable_file_map = self.file_map.write().unwrap();
         let file_map = writeable_file_map.clone();
@@ -126,7 +130,10 @@ impl Renderer for DefaultRenderer {
         Ok(file_map)
     }
 
-    fn render_template(&self, template: &str, data: &Value) -> Result<String> {
+    fn render_template<T>(&self, template: &str, data: &T) -> Result<String>
+    where
+        T: Serialize,
+    {
         let result = self.handlebars.render_template(template, data).unwrap();
         Ok(result)
     }

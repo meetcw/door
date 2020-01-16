@@ -4,10 +4,10 @@ use serde_json::{self, Value};
 pub struct SiteEntity {
     #[serde(default = "default_title")]
     pub title: String,
-    #[serde(default = "default_author")]
-    pub author: String,
     #[serde(default = "default_subtitle")]
     pub subtitle: String,
+    #[serde(default = "default_author")]
+    pub author: String,
     #[serde(default = "default_address")]
     pub address: String,
     #[serde(default = "default_theme")]
@@ -29,15 +29,15 @@ pub struct SiteEntity {
 }
 
 fn default_title() -> String {
-    "<Title>".to_string()
-}
-
-fn default_author() -> String {
-    "<Author>".to_string()
+    "Title".to_string()
 }
 
 fn default_subtitle() -> String {
-    "<Subtitle>".to_string()
+    "Subtitle".to_string()
+}
+
+fn default_author() -> String {
+    "Author".to_string()
 }
 
 fn default_address() -> String {
@@ -49,7 +49,7 @@ fn default_theme() -> String {
 }
 
 fn default_more() -> Value {
-    Value::Null
+    serde_json::from_str("{}").unwrap()
 }
 
 fn default_theme_directory() -> String {
