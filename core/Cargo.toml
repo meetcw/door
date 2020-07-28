@@ -1,5 +1,5 @@
 [package]
-name = "door-core"
+name = "core"
 version = "0.1.0"
 authors = ["baiyan"]
 edition = "2018"
@@ -7,8 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = "2.33.0"
-
 include_dir = "0.2.1"
 
 serde = "1.0.101"
@@ -26,9 +24,9 @@ uuid = { version = "0.7.4", features = ["serde","v4"] }
 
 handlebars = "2.0.2"
 
-lazy_static = "1.4.0"
 itertools = "0.8"
 
 [dev-dependencies]
 tester = { path = "../tester" }
-
+filesystem = "0.4.4"
+lazy_static = "1.4.0"

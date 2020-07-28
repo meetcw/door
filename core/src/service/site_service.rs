@@ -2,7 +2,6 @@ use crate::infrastructure::{Environment, Error};
 use crate::model::{Content, Site};
 
 type Result<T> = std::result::Result<T, Error>;
-type ContentFilter = fn(&Content) -> bool;
 use crate::repository::{
     ContentRepository, LocalContentRepository, LocalSiteRepository,
     SiteRepository,

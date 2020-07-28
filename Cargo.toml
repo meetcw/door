@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-door-core={path="core"}
+core={path="core"}
 resource = "0.2.1"
 
 [workspace]

@@ -138,23 +138,3 @@ impl Renderer for DefaultRenderer {
         Ok(result)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use tester::Tester;
-
-    use super::*;
-
-    #[test]
-    fn file_helper() {
-        Tester::new().run(|| {
-            let tpl = "{{#file \"./post/\" name \".html\"}}{{name}}{{/file}}";
-            let data = json!({ "name" : "about" });
-            let mut renderer = DefaultRenderer::new();
-            renderer.register_template_string("about", tpl);
-            let file_map = renderer.render("about", &data).unwrap();
-            println!("{:?}", file_map);
-            assert_eq!(file_map.len(), 1);
-        });
-    }
-}
