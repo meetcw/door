@@ -1,7 +1,9 @@
-extern crate door_core;
+extern crate core;
 #[macro_use]
 extern crate resource;
 
+use core::*;
+
 fn main() {
-    println!("Hello, world!");
+    println!("He llo, world!");
 }

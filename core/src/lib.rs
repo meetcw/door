@@ -1,5 +1,5 @@
 extern crate chrono;
-extern crate clap;
+#[cfg(test)]
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
@@ -15,16 +15,19 @@ extern crate serde_json;
 extern crate itertools;
 extern crate simplelog;
 #[cfg(test)]
+extern crate filesystem;
+#[cfg(test)]
 extern crate tester;
 extern crate uuid;
 
-mod app;
 mod entity;
 mod infrastructure;
 mod model;
 mod repository;
 mod service;
 mod template;
+
+pub use service::{CommandService, ContentService, SiteService};
 
 #[cfg(test)]
 mod tests {

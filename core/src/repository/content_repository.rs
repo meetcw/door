@@ -1,12 +1,9 @@
 use crate::entity::{ContentEntity, SiteEntity};
 use crate::infrastructure::{utilities, Environment, Error, RESOURCE};
-use crate::model::Site;
 use crate::template::{DefaultRenderer, Renderer};
 use colored::*;
 use regex::Regex;
-use serde::de::Unexpected::Str;
-use std::fs::{self, DirBuilder, File};
-use std::io;
+use std::fs;
 use std::io::{Read, Write};
 use std::path::Path;
 
@@ -177,7 +174,7 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
 }
 #[cfg(test)]
 mod tests {
-    use tester::Tester;
+    use filesystem::{FakeFileSystem, TempDir, TempFileSystem};
 
     use crate::infrastructure::Environment;
 
@@ -185,63 +182,47 @@ mod tests {
     use crate::repository::{LocalSiteRepository, SiteRepository};
 
     lazy_static! {
-        static ref ENVIRONMENT: Environment =
-            Environment::new(".", "/tmp/mysite");
-    }
-    fn clear_site() {
-        let path = std::path::Path::new(&ENVIRONMENT.workspace);
-        if path.exists() {
-            std::fs::remove_dir_all(path).unwrap();
-        };
+        static ref MOCK_FILESYSTEM: FakeFileSystem = FakeFileSystem::new();
     }
 
     #[test]
     fn create_content() {
-        Tester::new()
-            .set_before(clear_site)
-            .set_after(clear_site)
-            .run(|| {
-                let site_repository = LocalSiteRepository::new(&ENVIRONMENT);
-                let site = site_repository.create().unwrap();
-                let content_repository =
-                    LocalContentRepository::new(&ENVIRONMENT);
-                content_repository
-                    .create(&site, "hello.md", "post")
-                    .unwrap();
-            })
+        let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
+        let workspace = temp_fs.path().to_str().unwrap();
+        let environment = Environment::new(".", workspace);
+        let site_repository = LocalSiteRepository::new(&environment);
+        let site = site_repository.create().unwrap();
+        let content_repository = LocalContentRepository::new(&environment);
+        content_repository
+            .create(&site, "hello.md", "post")
+            .unwrap();
     }
 
     #[test]
     fn load_content() {
-        Tester::new()
-            .set_before(clear_site)
-            .set_after(clear_site)
-            .run(|| {
-                let site_repository = LocalSiteRepository::new(&ENVIRONMENT);
-                let site = site_repository.create().unwrap();
-                let content_repository =
-                    LocalContentRepository::new(&ENVIRONMENT);
-                content_repository
-                    .create(&site, "hello.md", "post")
-                    .unwrap();
-                content_repository.load(&site, "hello.md").unwrap();
-            })
+        let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
+        let workspace = temp_fs.path().to_str().unwrap();
+        let environment = Environment::new(".", workspace);
+        let site_repository = LocalSiteRepository::new(&environment);
+        let site = site_repository.create().unwrap();
+        let content_repository = LocalContentRepository::new(&environment);
+        content_repository
+            .create(&site, "hello.md", "post")
+            .unwrap();
+        content_repository.load(&site, "hello.md").unwrap();
     }
 
     #[test]
     fn load_all_contents() {
-        Tester::new()
-            .set_before(clear_site)
-            .set_after(clear_site)
-            .run(|| {
-                let site_repository = LocalSiteRepository::new(&ENVIRONMENT);
-                let site = site_repository.create().unwrap();
-                let content_repository =
-                    LocalContentRepository::new(&ENVIRONMENT);
-                content_repository
-                    .create(&site, "hello.md", "post")
-                    .unwrap();
-                content_repository.load_all(&site).unwrap();
-            })
+        let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
+        let workspace = temp_fs.path().to_str().unwrap();
+        let environment = Environment::new(".", workspace);
+        let site_repository = LocalSiteRepository::new(&environment);
+        let site = site_repository.create().unwrap();
+        let content_repository = LocalContentRepository::new(&environment);
+        content_repository
+            .create(&site, "hello.md", "post")
+            .unwrap();
+        content_repository.load_all(&site).unwrap();
     }
 }

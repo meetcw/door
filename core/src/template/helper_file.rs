@@ -4,7 +4,6 @@ use std::sync::Weak;
 
 use handlebars::*;
 
-type Callback = fn(String, String);
 
 pub struct FileHelper {
     pub file_map: Weak<RwLock<HashMap<String, String>>>,
@@ -52,5 +51,22 @@ impl HelperDef for FileHelper {
             Some(ref t) => t.render(r, ctx, rc, out),
             None => Ok(()),
         };
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::super::*;
+
+    #[test]
+    fn file_helper() {
+        let tpl = "{{#file \"./post/\" name \".html\"}}{{name}}{{/file}}";
+        let data = json!({ "name" : "about" });
+        let mut renderer = DefaultRenderer::new();
+        renderer.register_template_string("about", tpl).unwrap();
+        let file_map = renderer.render("about", &data).unwrap();
+        println!("{:?}", file_map);
+        assert_eq!(file_map.len(), 1);
     }
 }

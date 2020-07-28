@@ -64,6 +64,8 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
                 Error::new("An error occurred while writing the config file.")
                     .with_inner_error(&err)
             })?;
+
+        println!("{:?}", self.environment.workspace);
         site.root = std::fs::canonicalize(&self.environment.workspace)
             .unwrap()
             .to_str()
@@ -109,44 +111,32 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
 
 #[cfg(test)]
 mod tests {
-    use tester::Tester;
+    use filesystem::{FakeFileSystem, TempDir, TempFileSystem};
 
     use crate::infrastructure::Environment;
 
     use super::*;
 
     lazy_static! {
-        static ref ENVIRONMENT: Environment =
-            Environment::new(".", "/tmp/mysite");
-    }
-
-    fn clear_site() {
-        let path = std::path::Path::new(&ENVIRONMENT.workspace);
-        if path.exists() {
-            std::fs::remove_dir_all(path).unwrap();
-        };
+        static ref MOCK_FILESYSTEM: FakeFileSystem = FakeFileSystem::new();
     }
 
     #[test]
     fn create_site() {
-        Tester::new()
-            .set_before(clear_site)
-            .set_after(clear_site)
-            .run(|| {
-                let repository = LocalSiteRepository::new(&ENVIRONMENT);
-                repository.create().unwrap();
-            });
+        let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
+        let workspace = temp_fs.path().to_str().unwrap();
+        let environment = Environment::new(".", workspace);
+        let repository = LocalSiteRepository::new(&environment);
+        repository.create().unwrap();
     }
 
     #[test]
     fn load_site() {
-        Tester::new()
-            .set_before(clear_site)
-            .set_after(clear_site)
-            .run(|| {
-                let repository = LocalSiteRepository::new(&ENVIRONMENT);
-                repository.create().unwrap();
-                repository.load().unwrap();
-            });
+        let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
+        let workspace = temp_fs.path().to_str().unwrap();
+        let environment = Environment::new(".", workspace);
+        let repository = LocalSiteRepository::new(&environment);
+        repository.create().unwrap();
+        repository.load().unwrap();
     }
 }

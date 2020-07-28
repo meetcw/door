@@ -50,7 +50,7 @@ impl<'a> CommandService<'a> {
             });
             content_groups.push(content_group);
         }
-        let mut model = json!({
+        let model = json!({
             "title":site.title,
             "contents":content_groups
         });
@@ -69,7 +69,7 @@ impl<'a> CommandService<'a> {
             .join(&site.theme)
             .join("layout");
         let mut renderer = DefaultRenderer::new();
-        renderer.load_templates(&template_path);
+        renderer.load_templates(&template_path).unwrap();
         let data = self.create_model()?;
         for template in renderer.get_major_templates() {
             let file_map = renderer.render(&template, &data)?;
