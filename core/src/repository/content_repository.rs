@@ -1,5 +1,6 @@
+use crate::infrastructure::Resource;
 use crate::entity::{ContentEntity, SiteEntity};
-use crate::infrastructure::{utilities, Environment, Error, RESOURCE};
+use crate::infrastructure::{utilities, Environment, Error};
 use crate::template::{DefaultRenderer, Renderer};
 use colored::*;
 use regex::Regex;
@@ -118,11 +119,7 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         let renderer = DefaultRenderer::new();
         let data = renderer
             .render_template(
-                RESOURCE
-                    .get_file("site_template/content.md.hbs")
-                    .unwrap()
-                    .contents_utf8()
-                    .unwrap(),
+                Resource::get_text_content("content.md.hbs"),
                 &content,
             )
             .unwrap();

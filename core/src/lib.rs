@@ -12,10 +12,10 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
-extern crate itertools;
-extern crate simplelog;
 #[cfg(test)]
 extern crate filesystem;
+extern crate itertools;
+extern crate simplelog;
 #[cfg(test)]
 extern crate tester;
 extern crate uuid;

@@ -1,9 +1,10 @@
+use crate::infrastructure::Resource;
 use std::fs::{DirBuilder, File};
 use std::io::{Read, Write};
 use std::path::Path;
 
 use crate::entity::SiteEntity;
-use crate::infrastructure::{Environment, Error, RESOURCE};
+use crate::infrastructure::{Environment, Error};
 use crate::template::{DefaultRenderer, Renderer};
 
 type Result<T> = std::result::Result<T, Error>;
@@ -49,14 +50,7 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
             })?;
         let renderer = DefaultRenderer::new();
         let content = renderer
-            .render_template(
-                RESOURCE
-                    .get_file("site_template/site.json.hbs")
-                    .unwrap()
-                    .contents_utf8()
-                    .unwrap(),
-                &site,
-            )
+            .render_template(Resource::get_text_content("site.json.hbs"), &site)
             .unwrap();
         site_config_file
             .write(&content.into_bytes())
