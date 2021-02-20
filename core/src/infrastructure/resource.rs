@@ -44,10 +44,9 @@ mod tests {
         Resource::get_text_content("site.json.hbs");
     }
 
-
     #[test]
     fn list() {
         let list = Resource::list("theme");
-        println!("{:?}",list );
+        println!("{:?}", list);
     }
 }

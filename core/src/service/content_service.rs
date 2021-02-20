@@ -57,11 +57,11 @@ impl<'a> ContentService<'a> {
         return Ok(content);
     }
 
-    pub fn create(&self, filename: &str, target: &str) -> Result<Content> {
+    pub fn create(&self, target: &str) -> Result<Content> {
         let site_entity = self.site_repository.load()?;
         let content = self
             .content_respository
-            .create(&site_entity, filename, target)
+            .create(&site_entity, target)
             .map(|x| Content::from(x))?;
         return Ok(content);
     }
