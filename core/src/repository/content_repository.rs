@@ -1,5 +1,5 @@
-use crate::infrastructure::Resource;
 use crate::entity::{ContentEntity, SiteEntity};
+use crate::infrastructure::Resource;
 use crate::infrastructure::{utilities, Environment, Error};
 use crate::template::{DefaultRenderer, Renderer};
 use colored::*;
@@ -12,12 +12,7 @@ type Result<T> = std::result::Result<T, Error>;
 
 pub trait ContentRepository {
     fn load_all(&self, site: &SiteEntity) -> Result<Vec<ContentEntity>>;
-    fn create(
-        &self,
-        site: &SiteEntity,
-        filename: &str,
-        target: &str,
-    ) -> Result<ContentEntity>;
+    fn create(&self, site: &SiteEntity, target: &str) -> Result<ContentEntity>;
     fn load(&self, site: &SiteEntity, filename: &str) -> Result<ContentEntity>;
 }
 
@@ -67,30 +62,27 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
                     continue;
                 }
             };
-            if content.target == "POST" {
-                contents.push(content);
-            }
+            contents.push(content);
         }
         trace!("Loaded {} content(s)", contents.len());
         return Ok(contents);
     }
 
-    fn create(
-        &self,
-        site: &SiteEntity,
-        filename: &str,
-        target: &str,
-    ) -> Result<ContentEntity> {
+    fn create(&self, site: &SiteEntity, target: &str) -> Result<ContentEntity> {
+        let mut content = serde_json::from_str::<ContentEntity>("{}").unwrap();
+        content.path = format!("{}/{}.md", target, content.id);
+        content.target = String::from(target);
+        let file_path = Path::new(&site.root)
+            .join(&site.content_directory)
+            .join(target)
+            .join(format!("{}.md", content.id));
+
         println!(
             "{0:>12} {1} {2}",
             "Creating".green().bold(),
             "content",
-            filename
+            file_path.to_str().unwrap()
         );
-        let file_path = Path::new(&site.root)
-            .join(&site.content_directory)
-            .join(filename);
-
         if file_path.exists() {
             return Err(Error::new("File already exists."));
         }
@@ -113,9 +105,6 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
             Error::new("An error occurred while creating file.")
                 .with_inner_error(&err)
         })?;
-        let mut content = serde_json::from_str::<ContentEntity>("{}").unwrap();
-        content.path = String::from(filename);
-        content.target = String::from(target);
         let renderer = DefaultRenderer::new();
         let data = renderer
             .render_template(
