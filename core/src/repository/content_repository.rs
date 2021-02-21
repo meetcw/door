@@ -2,7 +2,6 @@ use crate::entity::{ContentEntity, SiteEntity};
 use crate::infrastructure::Resource;
 use crate::infrastructure::{utilities, Environment, Error};
 use crate::template::{DefaultRenderer, Renderer};
-use colored::*;
 use regex::Regex;
 use std::fs;
 use std::io::{Read, Write};
@@ -17,12 +16,14 @@ pub trait ContentRepository {
 }
 
 pub struct LocalContentRepository<'a> {
-    environment: &'a Environment,
+    _environment: &'a Environment,
 }
 
 impl<'a> LocalContentRepository<'a> {
     pub fn new(environment: &'a Environment) -> LocalContentRepository<'a> {
-        LocalContentRepository { environment }
+        LocalContentRepository {
+            _environment: environment,
+        }
     }
 }
 
@@ -77,12 +78,6 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
             .join(target)
             .join(format!("{}.md", content.id));
 
-        println!(
-            "{0:>12} {1} {2}",
-            "Creating".green().bold(),
-            "content",
-            file_path.to_str().unwrap()
-        );
         if file_path.exists() {
             return Err(Error::new("File already exists."));
         }
@@ -179,9 +174,7 @@ mod tests {
         let site_repository = LocalSiteRepository::new(&environment);
         let site = site_repository.create().unwrap();
         let content_repository = LocalContentRepository::new(&environment);
-        content_repository
-            .create(&site, "hello.md", "post")
-            .unwrap();
+        content_repository.create(&site, "post").unwrap();
     }
 
     #[test]
@@ -192,9 +185,7 @@ mod tests {
         let site_repository = LocalSiteRepository::new(&environment);
         let site = site_repository.create().unwrap();
         let content_repository = LocalContentRepository::new(&environment);
-        content_repository
-            .create(&site, "hello.md", "post")
-            .unwrap();
+        content_repository.create(&site, "post").unwrap();
         content_repository.load(&site, "hello.md").unwrap();
     }
 
@@ -206,9 +197,7 @@ mod tests {
         let site_repository = LocalSiteRepository::new(&environment);
         let site = site_repository.create().unwrap();
         let content_repository = LocalContentRepository::new(&environment);
-        content_repository
-            .create(&site, "hello.md", "post")
-            .unwrap();
+        content_repository.create(&site, "post").unwrap();
         content_repository.load_all(&site).unwrap();
     }
 }

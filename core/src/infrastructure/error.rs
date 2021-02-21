@@ -15,7 +15,7 @@ impl Error {
         };
     }
 
-    pub fn with_inner_error(mut self, error: &Display) -> Error {
+    pub fn with_inner_error(mut self, error: &dyn Display) -> Error {
         let message = format!("{}", error);
         self.inner_error = Box::new(Some(Error::new(&message)));
         return self;

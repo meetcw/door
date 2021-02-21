@@ -11,6 +11,7 @@ structopt = "0.3"
 core={path="core"}
 log = "0.4.14"
 simple_logger = "1.11.0"
+colored = "1.8.0"
 
 [workspace]
 members = [
