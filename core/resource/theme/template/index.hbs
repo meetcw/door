@@ -1,0 +1,16 @@
+{{#file "1.txt"}}
+
+{{title}}
+===================
+{{#each contents}}
+{{#group this}}
+-------------------
+    {{! {{json this}\} }}
+    {{../title}}
+    {{@../index}}
+    {{@group}}
+    {{json @../index}}
+    {{json @group}}
+{{/group}}
+{{/each}}
+{{/file}}

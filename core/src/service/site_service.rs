@@ -1,19 +1,17 @@
 use crate::infrastructure::{Environment, Error};
-use crate::model::{Content, Site};
+use crate::model::Site;
 use crate::repository::DefaultThemeRepository;
 use crate::repository::ThemeRepository;
+use crate::repository::{LocalSiteRepository, SiteRepository};
 use crate::template::{DefaultRenderer, Renderer};
 use crate::ContentService;
 use serde_json::Value;
-use itertools::Itertools;
-use std::iter::FromIterator;
+use std::fs::DirBuilder;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
 
 type Result<T> = std::result::Result<T, Error>;
-use crate::repository::{
-    ContentRepository, LocalContentRepository, LocalSiteRepository,
-    SiteRepository,
-};
-use std::cmp::Ordering;
 
 pub struct SiteService<'a> {
     content_service: ContentService<'a>,
@@ -24,27 +22,15 @@ impl<'a> SiteService<'a> {
     fn create_model(&self) -> Result<Value> {
         let site = self.load()?;
 
-        let contents = self.content_service.search(
-            |x| x.draft == false,
-            |a, b| a.create_time.cmp(&b.create_time),
-        )?;
-        let mut content_groups = vec![];
-        content_groups.push(json!({
-            "target":"all",
-            "contents":contents
-        }));
-        for (key, items) in &contents.iter().group_by(|x| x.target.clone()) {
-            let items = Vec::from_iter(items);
-            let content_group = json!({
-                "target":key,
-                "contents":items
-            });
-            content_groups.push(content_group);
-        }
-        let model = json!({
-            "title":site.title,
-            "contents":content_groups
-        });
+        let contents = self
+            .content_service
+            .search(|_| true, |a, b| a.create_time.cmp(&b.create_time))?;
+        let mut model = serde_json::to_value(&site).unwrap();
+        model["contents"] = serde_json::to_value(&contents).unwrap();
+        debug!(
+            "Create model\n{}",
+            serde_json::to_string_pretty(&model).unwrap()
+        );
         Ok(model)
     }
 
@@ -82,8 +68,26 @@ impl<'a> SiteService<'a> {
         let data = self.create_model()?;
         for template in renderer.get_major_templates() {
             let file_map = renderer.render(&template, &data)?;
-            println!("{:?}", file_map);
+            for (name, content) in &file_map {
+                let file_path = Path::new(&site.root)
+                    .join(&site.build_directory)
+                    .join(name);
+                DirBuilder::new()
+                    .recursive(true)
+                    .create(file_path.parent().unwrap())
+                    .map_err(|error| {
+                        Error::new(
+                    "An error occurred while creating the target directory.",
+                )
+                .with_inner_error(&error)
+                    })?;
+                let mut file = File::create(file_path).unwrap();
+                file.write_all(content.as_bytes()).unwrap();
+            }
         }
+
+        let assets_path = Path::new(&site.root).join(&site.build_directory);
+        theme_repository.save_assets(&assets_path).unwrap();
         Ok(())
     }
 

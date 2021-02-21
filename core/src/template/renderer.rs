@@ -1,17 +1,13 @@
+use super::FileHelper;
+use crate::infrastructure::Error;
+use crate::template::helper_group::GroupHelper;
+use crate::template::helper_json::JsonHelper;
+use handlebars::*;
+use serde::Serialize;
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::RwLock;
-use std::sync::Weak;
-
-use handlebars::*;
-use serde_json::Value;
-
-use crate::infrastructure::{utilities, Error};
-
-use super::FileHelper;
-use crate::template::helper_json::JsonHelper;
-use serde::Serialize;
 
 type Result<T> = std::result::Result<T, Error>;
 
@@ -39,25 +35,30 @@ pub trait Renderer {
         T: Serialize;
 }
 
-pub struct DefaultRenderer {
-    handlebars: Handlebars,
+pub struct DefaultRenderer<'a> {
+    handlebars: Handlebars<'a>,
     file_map: Arc<RwLock<HashMap<String, String>>>,
 }
 
-impl DefaultRenderer {}
+impl<'a> DefaultRenderer<'a> {}
 
-impl Renderer for DefaultRenderer {
+impl<'a> Renderer for DefaultRenderer<'a> {
     fn new() -> Self {
-        let file_map = Arc::new(RwLock::new(HashMap::new()));
         let handlebars = Handlebars::new();
 
+        let file_map = Arc::new(RwLock::new(HashMap::new()));
         let file_helper = Box::new(FileHelper {
             file_map: Arc::downgrade(&file_map),
         });
+
         let mut renderer = DefaultRenderer {
             handlebars,
             file_map,
         };
+        renderer
+            .handlebars
+            .register_helper("group", Box::new(GroupHelper {}));
+
         renderer.handlebars.register_helper("file", file_helper);
         renderer
             .handlebars
@@ -79,14 +80,15 @@ impl Renderer for DefaultRenderer {
             });
     }
 
-    fn load_templates(&mut self, path: &Path) -> Result<()> {
-        return self
-            .handlebars
-            .register_templates_directory(".hbs", path)
-            .map_err(|error| {
-                Error::new("Failed to register templates.")
-                    .with_inner_error(&error)
-            });
+    fn load_templates(&mut self, _path: &Path) -> Result<()> {
+        // return self
+        //     .handlebars
+        //     .register_templates_directory(".hbs", path)
+        //     .map_err(|error| {
+        //         Error::new("Failed to register templates.")
+        //             .with_inner_error(&error)
+        //     });
+        todo!()
     }
 
     fn get_templates(&self) -> Vec<String> {

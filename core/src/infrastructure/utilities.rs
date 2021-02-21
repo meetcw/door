@@ -2,7 +2,7 @@ use super::Error;
 use std;
 use std::fs::*;
 use std::path::Path;
-use std::rc::Rc;
+
 
 type Result<T> = std::result::Result<T, Error>;
 type Filter = fn(&Path) -> bool;

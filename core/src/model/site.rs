@@ -5,7 +5,7 @@ use serde_json::Value;
 pub struct Site {
     pub title: String,
     pub author: String,
-    pub subtitle: String,
+    pub description: String,
     pub address: String,
     pub theme: String,
     pub more: Value,
@@ -22,7 +22,7 @@ impl From<SiteEntity> for Site {
         Site {
             title: entity.title,
             author: entity.author,
-            subtitle: entity.subtitle,
+            description: entity.description,
             address: entity.address,
             theme: entity.theme,
             more: entity.more,

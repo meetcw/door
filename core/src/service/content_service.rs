@@ -1,14 +1,13 @@
 use crate::infrastructure::{Environment, Error};
-use crate::model::{Content, Site};
-
-type Result<T> = std::result::Result<T, Error>;
-type ContentFilter = fn(&Content) -> bool;
+use crate::model::Content;
 use crate::repository::{
     ContentRepository, LocalContentRepository, LocalSiteRepository,
     SiteRepository,
 };
 use std::cmp::Ordering;
-use uuid::Uuid;
+
+type Result<T> = std::result::Result<T, Error>;
+type ContentFilter = fn(&Content) -> bool;
 
 pub struct ContentService<'a> {
     site_repository: Box<dyn SiteRepository + 'a>,

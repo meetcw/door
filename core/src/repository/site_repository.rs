@@ -68,9 +68,7 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
         return Ok(site);
     }
     fn load(&self) -> Result<SiteEntity> {
-        trace!("Loading site {0}", self.environment.workspace);
         let path = Path::new(&self.environment.workspace);
-
         if !path.exists() {
             return Err(Error::new("The dircetory is not exists."));
         }

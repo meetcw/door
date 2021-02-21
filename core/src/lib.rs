@@ -10,11 +10,11 @@ extern crate include_dir;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate serde_json;
 #[cfg(test)]
 extern crate filesystem;
 extern crate itertools;
+#[cfg_attr(test, macro_use)]
+extern crate serde_json;
 #[cfg(test)]
 extern crate tester;
 extern crate uuid;

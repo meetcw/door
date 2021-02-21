@@ -4,9 +4,9 @@ extern crate log;
 extern crate simple_logger;
 extern crate structopt;
 
-use core::{ContentService, Environment, SiteService};
+use colored::*;
+use core::{ContentService, SiteService};
 use simple_logger::SimpleLogger;
-use std::fs::File;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -19,25 +19,23 @@ struct ApplicationArguments {
 }
 #[derive(StructOpt, Debug)]
 enum DoorCommand {
-    #[structopt(about = "Init current directory")]
+    #[structopt(about = "Create a site")]
     Init,
-    #[structopt(about = "add files to the staging area")]
-    Generate {
-        #[structopt(short, long, help = "Watch file change")]
-        watch: bool,
-    },
-    #[structopt(about = "add files to the staging area")]
-    Publish {
-        #[structopt(short, long, help = "Watch file change")]
-        watch: bool,
-    },
-    #[structopt(about = "add files to the staging area")]
+    #[structopt(about = "Display site information")]
+    Info,
+    #[structopt(about = "Generate the site files")]
+    Generate,
+    #[structopt(about = "Publish site")]
+    Publish,
+    #[structopt(about = "Content command")]
     Content(ContentCommand),
 }
 
 #[derive(StructOpt, Debug)]
 enum ContentCommand {
+    #[structopt(about = "Create a new content")]
     New,
+    #[structopt(about = "List contents")]
     List,
 }
 fn main() {
@@ -50,36 +48,55 @@ fn main() {
             .unwrap();
         debug!("{:?}", matches);
     }
-    match matches.command {
+    let result = match matches.command {
         DoorCommand::Init => {
             let site_service = SiteService::new(&environment);
-            site_service.create().unwrap();
+            site_service.create().map(|_| {})
         }
-        DoorCommand::Generate { watch: watch } => {
+        DoorCommand::Info => {
             let site_service = SiteService::new(&environment);
-            site_service.generate().unwrap();
+            site_service.load().map(|site| {
+                println!("{}: {}", "Site".bold(), site.title);
+                println!("{}:", "Contents".bold());
+                todo!()
+            })
         }
-        DoorCommand::Publish { watch: watch } => {
+        DoorCommand::Generate => {
             let site_service = SiteService::new(&environment);
-            site_service.publish().unwrap();
+            site_service.generate()
+        }
+        DoorCommand::Publish => {
+            let site_service = SiteService::new(&environment);
+            site_service.publish()
         }
         DoorCommand::Content(content_command) => match content_command {
             ContentCommand::New => {
                 let content_service = ContentService::new(&environment);
-                content_service.create("post").unwrap();
+                content_service.create("post").and(Ok(()))
             }
             ContentCommand::List => {
                 let content_service = ContentService::new(&environment);
-                let contents = content_service
-                    .search(
-                        |content| true,
-                        |a, b| a.create_time.cmp(&b.create_time),
-                    )
-                    .unwrap();
-                for content in contents {
-                    println!("{} \t\t {}", content.title, content.create_time);
-                }
+                content_service
+                    .search(|_| true, |a, b| a.create_time.cmp(&b.create_time))
+                    .map(|contents| {
+                        println!("TITLE \t TARGET \t DRAFT \t CREATE TIME");
+                        for content in contents {
+                            println!(
+                                "{} \t {} \t {} \t {}",
+                                content.title,
+                                content.target,
+                                content.draft,
+                                content.create_time
+                            );
+                        }
+                    })
             }
         },
-    }
+    };
+    result.map_or_else(
+        |e| {
+            println!("{}", e);
+        },
+        |_| {},
+    )
 }

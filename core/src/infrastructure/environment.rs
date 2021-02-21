@@ -1,6 +1,3 @@
-use std::fs;
-use std::path::Path;
-
 pub struct Environment {
     pub current_directory: String,
     pub workspace: String,
