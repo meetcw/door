@@ -1,0 +1,60 @@
+@import url('../assets/style.less');
+@import url('../assets/_variables.less');
+@import url('../assets/_mixins.less');
+
+.archive-wraper {
+  padding: 32px;
+
+  h1 {
+    color: @color-g;
+  }
+
+  .posts {
+    padding: 0;
+
+    .post {
+      list-style-type: none;
+      margin-left: 0;
+      margin-bottom: 1rem;
+
+      .meta {
+        display: inline-block;
+        font-size: 14px;
+        color: #666;
+        min-width: 100px;
+        margin-right: 16px;
+      }
+    }
+  }
+
+  @media (min-width: @screen-size) {
+    & {
+      width: 100%;
+      max-width: 900px;
+      margin: 0px auto;
+
+      .content-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .posts .post {
+        display: flex;
+        margin-bottom: 5px;
+
+        .meta {
+          text-align: left;
+        }
+      }
+    }
+
+  }
+
+  @media (max-width: @screen-size) {
+    & {
+      padding: 16px;
+    }
+
+  }
+}

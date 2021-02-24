@@ -1,5 +1,5 @@
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ThemeEntity {
+pub struct TemplateEntity {
     #[serde(default = "default_name")]
     pub name: String,
     #[serde(skip)]
@@ -7,5 +7,5 @@ pub struct ThemeEntity {
 }
 
 fn default_name() -> String {
-    String::from("Door")
+    String::from("default")
 }
