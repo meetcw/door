@@ -13,11 +13,13 @@ extern crate serde_derive;
 #[cfg(test)]
 extern crate filesystem;
 extern crate itertools;
+extern crate pulldown_cmark;
 #[cfg_attr(test, macro_use)]
 extern crate serde_json;
 #[cfg(test)]
 extern crate tester;
 extern crate uuid;
+extern crate roman;
 
 #[macro_export]
 macro_rules! function {

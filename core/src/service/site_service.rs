@@ -51,7 +51,20 @@ impl<'a> SiteService<'a> {
         self.site_repository.load().map(|x| Site::from(x))
     }
 
+    pub fn clean(&self) -> Result<()> {
+        let site = self.load()?;
+        let generate_path = Path::new(&site.root).join(&site.build_directory);
+        if generate_path.exists() {
+            std::fs::remove_dir_all(&generate_path).map_err(|error| {
+                Error::new("An error occurred while clean generate directory.")
+                    .with_inner_error(&error)
+            })?;
+        }
+        Ok(())
+    }
+
     pub fn generate(&self) -> Result<()> {
+        self.clean()?;
         let site = self.load()?;
         let mut renderer = DefaultRenderer::new();
         let theme_repository: Box<dyn ThemeRepository> =
