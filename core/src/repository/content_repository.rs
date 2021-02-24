@@ -1,6 +1,5 @@
-use crate::entity::{ContentEntity, SiteEntity};
-use crate::infrastructure::Resource;
-use crate::infrastructure::{utilities, Environment, Error};
+use crate::entity::{ContentEntity};
+use crate::infrastructure::*;
 use crate::template::{DefaultRenderer, Renderer};
 use regex::Regex;
 use std::fs;
@@ -10,29 +9,29 @@ use std::path::Path;
 type Result<T> = std::result::Result<T, Error>;
 
 pub trait ContentRepository {
-    fn load_all(&self, site: &SiteEntity) -> Result<Vec<ContentEntity>>;
-    fn create(&self, site: &SiteEntity, target: &str) -> Result<ContentEntity>;
-    fn load(&self, site: &SiteEntity, filename: &str) -> Result<ContentEntity>;
+    fn load_all(&self) -> Result<Vec<ContentEntity>>;
+    fn create(&self, target: &str) -> Result<ContentEntity>;
+    fn load(&self, filename: &str) -> Result<ContentEntity>;
 }
 
 pub struct LocalContentRepository<'a> {
-    _environment: &'a Environment,
+    environment: &'a Environment,
 }
 
 impl<'a> LocalContentRepository<'a> {
     pub fn new(environment: &'a Environment) -> LocalContentRepository<'a> {
         LocalContentRepository {
-            _environment: environment,
+            environment: environment,
         }
     }
 }
 
 impl<'a> ContentRepository for LocalContentRepository<'a> {
-    fn load_all(&self, site: &SiteEntity) -> Result<Vec<ContentEntity>> {
+    fn load_all(&self) -> Result<Vec<ContentEntity>> {
         trace!("Loading contents");
 
-        let content_path = Path::new(&site.root).join(&site.content_directory);
-        let list = utilities::find_files(&content_path, true, |_| true)?;
+        let content_path = &self.environment.content_directory;
+        let list = list_files(&content_path, true, |_| true)?;
         let mut paths = vec![];
         for item in &list {
             let mut path = Path::new(item);
@@ -56,7 +55,7 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         }
         let mut contents = vec![];
         for path in paths {
-            let content = match self.load(site, &path) {
+            let content = match self.load(&path) {
                 Ok(content) => content,
                 Err(err) => {
                     warn!("Failed to load content:{}. error:{}", path, err);
@@ -69,12 +68,13 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         return Ok(contents);
     }
 
-    fn create(&self, site: &SiteEntity, target: &str) -> Result<ContentEntity> {
+    fn create(&self, target: &str) -> Result<ContentEntity> {
         let mut content = serde_json::from_str::<ContentEntity>("{}").unwrap();
         content.path = format!("{}/{}.md", target, content.id);
         content.target = String::from(target);
-        let file_path = Path::new(&site.root)
-            .join(&site.content_directory)
+        let file_path = self
+            .environment
+            .content_directory
             .join(target)
             .join(format!("{}.md", content.id));
 
@@ -115,9 +115,9 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         return Ok(content);
     }
 
-    fn load(&self, site: &SiteEntity, filename: &str) -> Result<ContentEntity> {
+    fn load(&self, filename: &str) -> Result<ContentEntity> {
         trace!("Loading content {}", filename);
-        let content_path = Path::new(&site.root).join(&site.content_directory);
+        let content_path = &self.environment.content_directory;
         let file_path = content_path.join(filename);
         if !file_path.exists() {
             return Err(Error::new("The file is not exists."));
@@ -160,7 +160,6 @@ mod tests {
     use crate::infrastructure::Environment;
 
     use super::*;
-    use crate::repository::{LocalSiteRepository, SiteRepository};
 
     lazy_static! {
         static ref MOCK_FILESYSTEM: FakeFileSystem = FakeFileSystem::new();
@@ -171,10 +170,8 @@ mod tests {
         let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
         let workspace = temp_fs.path().to_str().unwrap();
         let environment = Environment::new(".", workspace);
-        let site_repository = LocalSiteRepository::new(&environment);
-        let site = site_repository.create().unwrap();
         let content_repository = LocalContentRepository::new(&environment);
-        content_repository.create(&site, "post").unwrap();
+        content_repository.create("post").unwrap();
     }
 
     #[test]
@@ -182,11 +179,9 @@ mod tests {
         let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
         let workspace = temp_fs.path().to_str().unwrap();
         let environment = Environment::new(".", workspace);
-        let site_repository = LocalSiteRepository::new(&environment);
-        let site = site_repository.create().unwrap();
         let content_repository = LocalContentRepository::new(&environment);
-        content_repository.create(&site, "post").unwrap();
-        content_repository.load(&site, "hello.md").unwrap();
+        content_repository.create("post").unwrap();
+        content_repository.load("hello.md").unwrap();
     }
 
     #[test]
@@ -194,10 +189,8 @@ mod tests {
         let temp_fs = MOCK_FILESYSTEM.temp_dir("mysite").unwrap();
         let workspace = temp_fs.path().to_str().unwrap();
         let environment = Environment::new(".", workspace);
-        let site_repository = LocalSiteRepository::new(&environment);
-        let site = site_repository.create().unwrap();
         let content_repository = LocalContentRepository::new(&environment);
-        content_repository.create(&site, "post").unwrap();
-        content_repository.load_all(&site).unwrap();
+        content_repository.create("post").unwrap();
+        content_repository.load_all().unwrap();
     }
 }

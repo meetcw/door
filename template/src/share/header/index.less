@@ -1,0 +1,149 @@
+@import url('../../assets/_variables.less');
+@import url('../../assets/_mixins.less');
+
+.header-wrapper {
+  width: 100%;
+
+  .title {
+    display: inline-block;
+
+    h1 {
+      letter-spacing: 0.01em;
+      font-size: 1.5rem;
+      line-height: 2rem;
+      font-style: normal;
+      font-weight: 700;
+      color: @color-f;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  .logo {
+    float: left;
+    margin-right: 20px;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+    border-radius: 5px;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+  }
+
+  .toggle {
+    display: none;
+    position: relative;
+
+    i {
+      font-size: 1.5rem;
+    }
+  }
+
+  .menu {
+    letter-spacing: 0.01em;
+    font-size: 0.8rem;
+    font-style: normal;
+    color: @color-g;
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      line-height: 15px;
+    }
+
+    a {
+      margin-right: 15px;
+      color: @color-g;
+    }
+
+    a:hover {
+      .underline(5px, @color-g);
+    }
+
+    li {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 15px;
+      border-right: 1px dotted @color-g;
+    }
+
+    .icon {
+      display: none;
+    }
+
+    li:last-child {
+      border-right: 0;
+      margin-right: 0;
+    }
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    background: none;
+  }
+
+  &:hover {
+    .logo {
+      -webkit-filter: none;
+      filter: none;
+    }
+  }
+
+  @media (max-width: @screen-size) {
+
+    .title {
+      padding-top: 9px;
+      padding-bottom: 9px;
+    }
+
+    .toggle {
+      display: block;
+      float: right;
+      color: @color-g;
+      height: 50px;
+      line-height: 50px;
+      font-size: 1.5rem;
+      margin-right: 10px;
+
+      &>* {
+        vertical-align: middle;
+      }
+    }
+
+    ul.menu {
+      display: none;
+      padding: 0px;
+
+      a:hover {
+        background: none;
+      }
+
+      li {
+        display: block;
+        height: 2rem;
+        padding-top: 1rem;
+        padding-left: 70px;
+        font-size: 1rem;
+        display: block;
+        border-right: 0;
+      }
+
+      li.icon {
+        display: inline-block;
+        position: absolute;
+        top: 55px;
+        right: 1rem;
+      }
+    }
+
+    &.with-menu {
+      ul.menu {
+        display: block;
+      }
+    }
+
+  }
+}

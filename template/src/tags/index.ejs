@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>标签|{{@root/site/title}}</title>
+</head>
+
+<body>
+  <div class="tag-wraper">
+    <%= require("../share/header/index.ejs")() %>
+    <div class="content-wrapper">
+      <div class="tags">
+        {{#each @root/tags}}
+        <a href="#anchor_{{hash name}}" class="tag">{{name}}({{count list}})</a>
+        {{/each}}
+      </div>
+      {{#each @root/tags}}
+      <div>
+        <h2 id="anchor_{{hash name}}">{{name}}</h2>
+        <ul class="posts">
+          {{#each list}}
+          <li class="post">
+            <div class="meta">
+              <time>{{dateformat create_time}}</time>
+            </div>
+            <span>
+              <a href="/post/{{id}}.html">{{title}}</a>
+            </span>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+      {{/each}}
+    </div>
+    <%= require("../share/footer/index.ejs")() %>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,251 @@
+   @import "./_mixins.less";
+   @import "./_variables.less";
+   @import "./iconfont.css";
+
+   *,
+   *:before,
+   *:after {
+       box-sizing: border-box;
+   }
+
+   html {
+       height: 100%;
+       -webkit-text-size-adjust: 100%;
+       -ms-text-size-adjust: 100%;
+       .antialias()
+   }
+
+   body {
+       color: @color-f;
+       background-color: @color-b;
+       font-display: swap;
+       font-size: @font-size;
+       font-family: @font-family;
+       font-weight: 400;
+       text-rendering: geometricPrecision;
+       -moz-osx-font-smoothing: grayscale;
+       -webkit-font-smoothing: antialiased;
+       line-height: @line-height;
+       min-height: 100%;
+       display: flex;
+       flex-direction: column;
+       margin: 0px;
+   }
+
+   h1 {
+       letter-spacing: 0.01em;
+       font-size: 1.5em;
+       font-style: normal;
+       font-weight: 700;
+       color: @color-f;
+       margin-top: 1rem;
+       margin-bottom: 1rem;
+       display: block;
+   }
+
+   h2 {
+       position: relative;
+       font-size: 1rem;
+       font-weight: bold;
+       text-transform: none;
+       letter-spacing: normal;
+       margin-top: 1rem;
+       margin-bottom: 0.5rem;
+       color: @color-f;
+       display: block;
+   }
+
+   h3 {
+       font-size: 0.9rem;
+       font-weight: bold;
+       text-decoration: underline;
+       color: @color-f;
+   }
+
+   h4,
+   h5,
+   h6 {
+       font-size: 0.9rem;
+       font-weight: normal;
+       color: @color-f;
+       border-bottom: 1px dashed @color-f;
+       display: inline;
+       text-decoration: none;
+   }
+
+   h3,
+   h4,
+   h5,
+   h6 {
+       margin-top: 0.9rem;
+       margin-bottom: 0.5rem;
+   }
+
+   hr {
+       border: 1px dashed @color-f;
+   }
+
+   strong {
+       font-weight: bold;
+   }
+
+   em,
+   cite {
+       font-style: italic;
+   }
+
+   sup,
+   sub {
+       font-size: 0.75em;
+       line-height: 0;
+       position: relative;
+       vertical-align: baseline;
+   }
+
+   sup {
+       top: -0.5em;
+   }
+
+   sub {
+       bottom: -0.2em;
+   }
+
+   small {
+       font-size: 0.85em;
+   }
+
+   acronym,
+   abbr {
+       border-bottom: 1px dotted;
+   }
+
+   ul,
+   ol,
+   dl {
+       line-height: @line-height;
+   }
+
+   ul,
+   ol ul,
+   ol {
+       margin-top: 0;
+       margin-bottom: 0;
+   }
+
+   ol {
+       list-style: decimal;
+   }
+
+   dt {
+       font-weight: bold;
+   }
+
+   table {
+       width: 100%;
+       font-size: @font-size - 2px;
+       border-collapse: collapse;
+       text-align: left;
+   }
+
+   th {
+       font-size: @font-size - 1px;
+       font-weight: bold;
+       color: @color-f;
+       border-bottom: 1px dashed #ccc;
+       padding: 8px 8px;
+   }
+
+   td {
+       border-bottom: none;
+       padding: 9px 8px 0px 8px;
+   }
+
+   p {
+       .hyphens(auto);
+   }
+
+   pre {
+       overflow-x: auto;
+       margin: 1rem 0;
+       padding: 10px 15px;
+       border-radius: 4px;
+       background: @color-f;
+       font-family: "Menlo", "Meslo LG", monospace;
+       -webkit-border-radius: 4px;
+   }
+
+   pre,
+   code {
+       .hyphens(manual);
+   }
+
+   a {
+       text-decoration: none;
+       transition: color 0.3s ease;
+       color: @color-f;
+       cursor: pointer;
+   }
+
+   a:hover {
+       .underline(6px, @color-g);
+       color: @color-d;
+   }
+
+   blockquote {
+       background: inherit;
+       color: #ccffb6;
+       border-left: 0px solid #ccc;
+       margin: 1rem 10px;
+       padding: 0.5em 10px;
+       quotes: '\201C''\201D''\2018''\2019';
+
+       p {
+           margin: 0;
+       }
+
+       &:before {
+           color: #ccffb6;
+           content: '\201C';
+           font-size: 2em;
+           line-height: 0.1em;
+           margin-right: 0.25em;
+           vertical-align: -0.4em;
+       }
+
+       footer {
+           color: #666;
+           font-size: 11px;
+           margin: line-height 0;
+
+           a {
+               color: #666;
+               background-image: linear-gradient(transparent, transparent 5px, #666 5px, #666);
+
+               &:hover {
+                   color: #999;
+                   background-image: linear-gradient(transparent, transparent 4px, #999 4px, #999);
+               }
+           }
+
+           cite {
+               &:before {
+                   content: '—';
+                   padding: 0 0.5em;
+               }
+           }
+       }
+   }
+
+   .with-hashtag {
+       position: relative;
+
+       &:before {
+           content: '# ';
+           color: @color-g;
+           position: absolute;
+           left: -1em;
+           top: -4px;
+           font-size: 1.2em;
+           font-weight: bold;
+       }
+   }

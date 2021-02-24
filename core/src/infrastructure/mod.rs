@@ -1,7 +1,8 @@
 mod environment;
 mod error;
+mod fs;
 mod resource;
-pub use error::Error;
-pub mod utilities;
 pub use environment::Environment;
+pub use error::Error;
+pub use fs::{copy_files, list_files};
 pub use resource::Resource;

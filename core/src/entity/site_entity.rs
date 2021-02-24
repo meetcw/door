@@ -10,22 +10,10 @@ pub struct SiteEntity {
     pub author: String,
     #[serde(default = "default_address")]
     pub address: String,
-    #[serde(default = "default_theme")]
-    pub theme: String,
+    #[serde(default = "default_template")]
+    pub template: String,
     #[serde(default = "default_more")]
     pub more: Value,
-    #[serde(default = "default_theme_directory")]
-    pub theme_directory: String,
-    #[serde(default = "default_content_directory")]
-    pub content_directory: String,
-    #[serde(default = "default_data_directory")]
-    pub data_directory: String,
-    #[serde(default = "default_build_directory")]
-    pub build_directory: String,
-    #[serde(default = "default_publish_directory")]
-    pub publish_directory: String,
-    #[serde(skip_serializing, default = "default_workspace")]
-    pub root: String,
 }
 
 fn default_title() -> String {
@@ -44,34 +32,10 @@ fn default_address() -> String {
     "/".to_string()
 }
 
-fn default_theme() -> String {
+fn default_template() -> String {
     "default".to_string()
 }
 
 fn default_more() -> Value {
     serde_json::from_str("{}").unwrap()
-}
-
-fn default_theme_directory() -> String {
-    "theme".to_string()
-}
-
-fn default_content_directory() -> String {
-    "content".to_string()
-}
-
-fn default_build_directory() -> String {
-    "build".to_string()
-}
-
-fn default_data_directory() -> String {
-    "data".to_string()
-}
-
-fn default_publish_directory() -> String {
-    "publish".to_string()
-}
-
-fn default_workspace() -> String {
-    ".".to_string()
 }

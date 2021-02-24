@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>{{title}}|{{@root/site/title}}</title>
+</head>
+
+<body>
+  <div class="post-wrapper">
+
+    <div class="side">
+      <div class="toggle">
+      <i class="iconfont icon-dian"></i>
+      </div>
+      <div class="toc">
+        <ol>
+          {{#mdtoc content as |toc|}}
+          {{#each toc as |item|}}
+          <li class="t{{item.level}}" >
+            <a href="#anchor_{{hash item/name}}">{{item/name}}</a>
+          </li>
+          {{/each}}
+          {{/mdtoc}}
+        </ol>
+      </div>
+
+    </div>
+    <div class="center">
+      <%= require("../share/header/index.ejs")() %>
+      <div class="content-wrapper">
+        <article class="post">
+          <header class="header">
+            <h1 class="title"> {{title}} </h1>
+            <div class="meta">
+              <div class="date">
+                <time>{{dateformat create_time}}</time>
+              </div>
+              <div class="tags">
+                <i class="iconfont icon-tag"></i>
+                {{#each tags}}
+                <a href="/tags.html#anchor_{{hash this}}" class="tag">{{this}}</a>
+                {{/each}}
+              </div>
+            </div>
+          </header>
+          <div class="content">
+            {{markdown content}}
+          </div>
+        </article>
+        <%= require("../share/comment/index.ejs")() %>
+      </div>
+      <%= require("../share/footer/index.ejs")() %>
+    </div>
+  </div>
+</body>
+
+</html>

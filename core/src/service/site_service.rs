@@ -1,6 +1,7 @@
 use crate::infrastructure::{Environment, Error};
 use crate::model::Site;
-use crate::repository::DefaultThemeRepository;
+use crate::repository::save_default_template;
+use crate::repository::LocalThemeRepository;
 use crate::repository::ThemeRepository;
 use crate::repository::{LocalSiteRepository, SiteRepository};
 use crate::template::{DefaultRenderer, Renderer};
@@ -9,17 +10,17 @@ use serde_json::Value;
 use std::fs::DirBuilder;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
 
 type Result<T> = std::result::Result<T, Error>;
 
 pub struct SiteService<'a> {
+    environment: &'a Environment,
     content_service: ContentService<'a>,
     site_repository: Box<dyn SiteRepository + 'a>,
 }
 
 impl<'a> SiteService<'a> {
-    fn create_model(&self) -> Result<Value> {
+    fn render_model(&self) -> Result<Value> {
         let site = self.load()?;
 
         let contents = self
@@ -37,14 +38,18 @@ impl<'a> SiteService<'a> {
     pub fn new(environment: &'a Environment) -> SiteService {
         let site_repository = Box::new(LocalSiteRepository::new(environment));
         let content_service = ContentService::new(environment);
+
         SiteService {
+            environment,
             site_repository,
             content_service,
         }
     }
 
     pub fn create(&self) -> Result<Site> {
-        self.site_repository.create().map(|x| Site::from(x))
+        let site = self.site_repository.create().map(|x| Site::from(x))?;
+        save_default_template(&self.environment.template_directory.join("default"))?;
+        Ok(site)
     }
 
     pub fn load(&self) -> Result<Site> {
@@ -52,8 +57,7 @@ impl<'a> SiteService<'a> {
     }
 
     pub fn clean(&self) -> Result<()> {
-        let site = self.load()?;
-        let generate_path = Path::new(&site.root).join(&site.build_directory);
+        let generate_path = &self.environment.generate_directory;
         if generate_path.exists() {
             std::fs::remove_dir_all(&generate_path).map_err(|error| {
                 Error::new("An error occurred while clean generate directory.")
@@ -68,23 +72,22 @@ impl<'a> SiteService<'a> {
         let site = self.load()?;
         let mut renderer = DefaultRenderer::new();
         let theme_repository: Box<dyn ThemeRepository> =
-            Box::new(DefaultThemeRepository::new(&site.theme_directory));
-        let templates = theme_repository.templates();
+            Box::new(LocalThemeRepository::new(&self.environment));
+        let templates = theme_repository.layouts(&site.template);
+        debug!("Find {} render templates", templates.len());
         for name in templates {
             renderer
                 .register_template_string(
                     &name,
-                    &theme_repository.template(&name).unwrap(),
+                    &theme_repository.layout(&site.template, &name).unwrap(),
                 )
                 .unwrap();
         }
-        let data = self.create_model()?;
+        let data = self.render_model()?;
         for template in renderer.get_major_templates() {
             let file_map = renderer.render(&template, &data)?;
             for (name, content) in &file_map {
-                let file_path = Path::new(&site.root)
-                    .join(&site.build_directory)
-                    .join(name);
+                let file_path = self.environment.generate_directory.join(name);
                 DirBuilder::new()
                     .recursive(true)
                     .create(file_path.parent().unwrap())
@@ -99,8 +102,12 @@ impl<'a> SiteService<'a> {
             }
         }
 
-        let assets_path = Path::new(&site.root).join(&site.build_directory);
-        theme_repository.save_assets(&assets_path).unwrap();
+        theme_repository
+            .save_static_files(
+                &site.template,
+                &self.environment.generate_directory,
+            )
+            .unwrap();
         Ok(())
     }
 

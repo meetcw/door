@@ -1,14 +1,13 @@
 use super::Error;
 use std;
 use std::fs::*;
-use std::path::Path;
-
+use std::path::{Path, PathBuf};
 
 type Result<T> = std::result::Result<T, Error>;
 type Filter = fn(&Path) -> bool;
 
-fn innser_find_files(root: &Path, recursive: bool) -> Result<Vec<String>> {
-    let mut list: Vec<String> = vec![];
+fn innser_list_files(root: &Path, recursive: bool) -> Result<Vec<PathBuf>> {
+    let mut list: Vec<PathBuf> = vec![];
     if !root.exists() {
         return Ok(vec![]);
     } else if root.is_dir() {
@@ -21,30 +20,29 @@ fn innser_find_files(root: &Path, recursive: bool) -> Result<Vec<String>> {
             })?;
             let sub_path = entry.path();
             if sub_path.is_dir() && recursive {
-                let mut sub_list = innser_find_files(&sub_path, recursive)?;
+                let mut sub_list = innser_list_files(&sub_path, recursive)?;
                 list.append(&mut sub_list);
             } else if sub_path.is_file() {
-                let tmp = sub_path.as_path();
-                list.push(tmp.to_str().unwrap().to_string());
+                list.push(sub_path);
             }
         }
     } else {
-        list.push(root.to_str().unwrap().to_string());
+        list.push(root.to_path_buf());
     }
     return Ok(list);
 }
 
-pub fn find_files(
+pub fn list_files(
     root: &Path,
     recursive: bool,
     filter: Filter,
-) -> Result<Vec<String>> {
+) -> Result<Vec<PathBuf>> {
     let mut list = vec![];
-    let absolute_list = innser_find_files(root, recursive).unwrap();
+    let absolute_list = innser_list_files(root, recursive).unwrap();
     for item in absolute_list {
         let path = Path::new(&item);
         if filter(path) {
-            list.push(path.to_str().unwrap().to_string());
+            list.push(path.to_path_buf());
         }
     }
     return Ok(list);
@@ -68,7 +66,7 @@ pub fn copy_files(source: &Path, target: &Path, filter: Filter) -> Result<()> {
                 .with_inner_error(&error)
             })?;
     }
-    let files = find_files(&source, true, filter)?;
+    let files = list_files(&source, true, filter)?;
     for file in &files {
         let source_file_path = Path::new(file);
         let path = source_file_path
@@ -100,19 +98,4 @@ pub fn copy_files(source: &Path, target: &Path, filter: Filter) -> Result<()> {
         })?;
     }
     return Ok(());
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use tester::Tester;
-
-    #[test]
-    fn find_files() {
-        Tester::new().run(|| {
-            let list =
-                super::find_files(&Path::new("."), true, |_| true).unwrap();
-            assert!(list.len() > 0);
-        })
-    }
 }

@@ -1,7 +1,7 @@
 use crate::infrastructure::Resource;
 use std::fs::{DirBuilder, File};
 use std::io::{Read, Write};
-use std::path::Path;
+
 
 use crate::entity::SiteEntity;
 use crate::infrastructure::{Environment, Error};
@@ -25,23 +25,22 @@ impl<'a> LocalSiteRepository<'a> {
 
 impl<'a> SiteRepository for LocalSiteRepository<'a> {
     fn create(&self) -> Result<SiteEntity> {
-        let path = Path::new(&self.environment.workspace);
-        if !path.exists() {
+        if !self.environment.workspace_directory.exists() {
             DirBuilder::new()
                 .recursive(true)
-                .create(path)
+                .create(&self.environment.workspace_directory)
                 .map_err(|err| {
                     Error::new("Failed to create the site directory.")
                         .with_inner_error(&err)
                 })?;
         }
-        let site_config_path = path.join("site.json");
+        let site_config_path = self.environment.workspace_directory.join("site.json");
         if site_config_path.exists() && site_config_path.is_file() {
             return Err(Error::new(
                 "Failed to create a new site. because a site exists in the current directory.",
             ));
         }
-        let mut site = serde_json::from_str::<SiteEntity>("{}").unwrap();
+        let site = serde_json::from_str::<SiteEntity>("{}").unwrap();
 
         let mut site_config_file =
             File::create(site_config_path).map_err(|err| {
@@ -59,20 +58,13 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
                     .with_inner_error(&err)
             })?;
 
-        println!("{:?}", self.environment.workspace);
-        site.root = std::fs::canonicalize(&self.environment.workspace)
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
         return Ok(site);
     }
     fn load(&self) -> Result<SiteEntity> {
-        let path = Path::new(&self.environment.workspace);
-        if !path.exists() {
+        if !self.environment.workspace_directory.exists() {
             return Err(Error::new("The dircetory is not exists."));
         }
-        let config_path = path.join("site.json");
+        let config_path = self.environment.workspace_directory.join("site.json");
         if !config_path.exists() {
             return Err(Error::new("The config file is not exists."));
         }
@@ -87,16 +79,11 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
                 .with_inner_error(&error)
         })?;
 
-        let mut site =
+        let site =
             serde_json::from_str::<SiteEntity>(&buffer).map_err(|error| {
                 Error::new("Failed to resolve the config file.")
                     .with_inner_error(&error)
             })?;
-        site.root = std::fs::canonicalize(&self.environment.workspace)
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
         return Ok(site);
     }
 }
