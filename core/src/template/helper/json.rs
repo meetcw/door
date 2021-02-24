@@ -1,6 +1,4 @@
-use handlebars::{
-    Context, Handlebars, Helper, HelperDef, HelperResult, Output, RenderContext,
-};
+use handlebars::*;
 
 pub struct JsonHelper;
 

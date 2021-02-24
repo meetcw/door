@@ -1,7 +1,5 @@
-use super::FileHelper;
 use crate::infrastructure::Error;
-use crate::template::helper_group::GroupHelper;
-use crate::template::helper_json::JsonHelper;
+use crate::template::helper::*;
 use handlebars::*;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -58,11 +56,22 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         renderer
             .handlebars
             .register_helper("group", Box::new(GroupHelper {}));
-
+        renderer
+            .handlebars
+            .register_helper("sort", Box::new(SortHelper {}));
         renderer.handlebars.register_helper("file", file_helper);
         renderer
             .handlebars
             .register_helper("json", Box::new(JsonHelper {}));
+        renderer
+            .handlebars
+            .register_helper("concat", Box::new(ConcatHelper {}));
+        renderer
+            .handlebars
+            .register_helper("markdown", Box::new(MarkdownHelper {}));
+        renderer
+            .handlebars
+            .register_helper("markdown-toc", Box::new(MarkdownTOCHelper {}));
         return renderer;
     }
 

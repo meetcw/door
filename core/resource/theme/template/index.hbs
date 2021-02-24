@@ -1,16 +1,22 @@
-{{#file "1.txt"}}
+{{#file (concat (title) ".txt")}}
 
 {{title}}
-===================
-{{#each contents}}
-{{#group this}}
--------------------
-    {{! {{json this}\} }}
-    {{../title}}
-    {{@../index}}
-    {{@group}}
-    {{json @../index}}
-    {{json @group}}
-{{/group}}
+
+{{#group contents "/target"}}
+
+{{#sort this "/name" invert=true}}
+{{#each this}}
+  name:{{name}}
+  {{#each list}}
+    {{markdown content}}
+    {{#markdown-toc content}}
+      {{#each this}}
+        {{level}}-{{name}}
+      {{/each}}
+    {{/markdown-toc}}
+  {{/each}}
 {{/each}}
+{{/sort}}
+
+{{/group}}
 {{/file}}

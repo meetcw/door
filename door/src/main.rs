@@ -23,7 +23,9 @@ enum DoorCommand {
     Init,
     #[structopt(about = "Display site information")]
     Info,
-    #[structopt(about = "Generate the site files")]
+    #[structopt(about = "Remove the generate directory")]
+    Clean,
+    #[structopt(about = "Generate site")]
     Generate,
     #[structopt(about = "Publish site")]
     Publish,
@@ -60,6 +62,10 @@ fn main() {
                 println!("{}:", "Contents".bold());
                 todo!()
             })
+        }
+        DoorCommand::Clean => {
+            let site_service = SiteService::new(&environment);
+            site_service.clean()
         }
         DoorCommand::Generate => {
             let site_service = SiteService::new(&environment);
