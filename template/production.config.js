@@ -1,7 +1,8 @@
+const path = require('path')
 module.exports = {
     mode : 'production',
     getPageFilename : function (name){
-        return './_' + name + '.hbs'
+        return './layout/_' + name + '.hbs'
     },
-    outputPath: '/Users/baiyan/Documents/Projects/baiyan/theme/default'
+    outputPath: path.resolve(__dirname, '../core/resource/template')
 }

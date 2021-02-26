@@ -1,22 +1,3 @@
-{{#file (concat (title) ".txt")}}
-
-{{title}}
-
-{{#group contents "/target"}}
-
-{{#sort this "/name" invert=true}}
-{{#each this}}
-  name:{{name}}
-  {{#each list}}
-    {{markdown content}}
-    {{#markdown-toc content}}
-      {{#each this}}
-        {{level}}-{{name}}
-      {{/each}}
-    {{/markdown-toc}}
-  {{/each}}
-{{/each}}
-{{/sort}}
-
-{{/group}}
+{{#file "./index.html"}}
+{{> _index.hbs}}
 {{/file}}

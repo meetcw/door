@@ -11,15 +11,15 @@ type Result<T> = std::result::Result<T, Error>;
 
 pub trait Renderer {
     fn new() -> Self;
-    fn register_template_string(
+    fn register_layout_string(
         &mut self,
         name: &str,
         template: &str,
     ) -> Result<()>;
-    fn load_templates(&mut self, path: &Path) -> Result<()>;
-    fn get_templates(&self) -> Vec<String>;
-    fn get_major_templates(&self) -> Vec<String>;
-    fn get_component_templates(&self) -> Vec<String>;
+    fn load_layouts(&mut self, path: &Path) -> Result<()>;
+    fn get_layouts(&self) -> Vec<String>;
+    fn get_major_layouts(&self) -> Vec<String>;
+    fn get_component_layouts(&self) -> Vec<String>;
     fn render<T>(
         &self,
         name: &str,
@@ -28,7 +28,7 @@ pub trait Renderer {
     where
         T: Serialize;
 
-    fn render_template<T>(&self, template: &str, data: &T) -> Result<String>
+    fn render_string<T>(&self, layout: &str, data: &T) -> Result<String>
     where
         T: Serialize;
 }
@@ -72,10 +72,16 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         renderer
             .handlebars
             .register_helper("markdown-toc", Box::new(MarkdownTOCHelper {}));
+        renderer
+            .handlebars
+            .register_helper("datetime", Box::new(DatetimeHelper {}));
+        renderer
+            .handlebars
+            .register_helper("assign", Box::new(AssignHelper {}));
         return renderer;
     }
 
-    fn register_template_string(
+    fn register_layout_string(
         &mut self,
         name: &str,
         template: &str,
@@ -89,7 +95,7 @@ impl<'a> Renderer for DefaultRenderer<'a> {
             });
     }
 
-    fn load_templates(&mut self, _path: &Path) -> Result<()> {
+    fn load_layouts(&mut self, _path: &Path) -> Result<()> {
         // return self
         //     .handlebars
         //     .register_templates_directory(".hbs", path)
@@ -100,7 +106,7 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         todo!()
     }
 
-    fn get_templates(&self) -> Vec<String> {
+    fn get_layouts(&self) -> Vec<String> {
         let mut keys = vec![];
         let template_map = self.handlebars.get_templates();
         for key in template_map.keys() {
@@ -109,7 +115,7 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         return keys;
     }
 
-    fn get_major_templates(&self) -> Vec<String> {
+    fn get_major_layouts(&self) -> Vec<String> {
         let mut keys = vec![];
         let template_map = self.handlebars.get_templates();
         for key in template_map.keys() {
@@ -120,7 +126,7 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         return keys;
     }
 
-    fn get_component_templates(&self) -> Vec<String> {
+    fn get_component_layouts(&self) -> Vec<String> {
         let mut keys = vec![];
         let template_map = self.handlebars.get_templates();
         for key in template_map.keys() {
@@ -141,7 +147,7 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         Ok(file_map)
     }
 
-    fn render_template<T>(&self, template: &str, data: &T) -> Result<String>
+    fn render_string<T>(&self, template: &str, data: &T) -> Result<String>
     where
         T: Serialize,
     {

@@ -1,11 +1,9 @@
-use crate::infrastructure::Resource;
-use std::fs::{DirBuilder, File};
-use std::io::{Read, Write};
-
-
 use crate::entity::SiteEntity;
+use crate::infrastructure::Resource;
 use crate::infrastructure::{Environment, Error};
 use crate::template::{DefaultRenderer, Renderer};
+use std::fs::{DirBuilder, File};
+use std::io::Write;
 
 type Result<T> = std::result::Result<T, Error>;
 
@@ -34,7 +32,8 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
                         .with_inner_error(&err)
                 })?;
         }
-        let site_config_path = self.environment.workspace_directory.join("site.json");
+        let site_config_path =
+            self.environment.workspace_directory.join("site.json");
         if site_config_path.exists() && site_config_path.is_file() {
             return Err(Error::new(
                 "Failed to create a new site. because a site exists in the current directory.",
@@ -49,7 +48,7 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
             })?;
         let renderer = DefaultRenderer::new();
         let content = renderer
-            .render_template(Resource::get_text_content("site.json.hbs"), &site)
+            .render_string(Resource::get_text_content("site.json.hbs"), &site)
             .unwrap();
         site_config_file
             .write(&content.into_bytes())
@@ -64,26 +63,27 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
         if !self.environment.workspace_directory.exists() {
             return Err(Error::new("The dircetory is not exists."));
         }
-        let config_path = self.environment.workspace_directory.join("site.json");
+        let config_path =
+            self.environment.workspace_directory.join("site.json");
         if !config_path.exists() {
             return Err(Error::new("The config file is not exists."));
         }
-
-        let mut config_file = File::open(config_path).map_err(|error| {
-            Error::new("Failed to open the config file.")
-                .with_inner_error(&error)
-        })?;
-        let mut buffer = String::new();
-        config_file.read_to_string(&mut buffer).map_err(|error| {
+        let buffer = std::fs::read_to_string(config_path).map_err(|error| {
             Error::new("Failed to read the config file.")
                 .with_inner_error(&error)
         })?;
 
-        let site =
+        let mut site =
             serde_json::from_str::<SiteEntity>(&buffer).map_err(|error| {
                 Error::new("Failed to resolve the config file.")
                     .with_inner_error(&error)
             })?;
+
+        site.more = serde_json::from_str(&buffer).map_err(|error| {
+            Error::new("Failed to resolve the config file.")
+                .with_inner_error(&error)
+        })?;
+
         return Ok(site);
     }
 }

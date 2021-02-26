@@ -1,9 +1,9 @@
-use crate::entity::{ContentEntity};
+use crate::entity::ContentEntity;
 use crate::infrastructure::*;
 use crate::template::{DefaultRenderer, Renderer};
 use regex::Regex;
 use std::fs;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::Path;
 
 type Result<T> = std::result::Result<T, Error>;
@@ -29,7 +29,6 @@ impl<'a> LocalContentRepository<'a> {
 impl<'a> ContentRepository for LocalContentRepository<'a> {
     fn load_all(&self) -> Result<Vec<ContentEntity>> {
         trace!("Loading contents");
-
         let content_path = &self.environment.content_directory;
         let list = list_files(&content_path, true, |_| true)?;
         let mut paths = vec![];
@@ -102,7 +101,7 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         })?;
         let renderer = DefaultRenderer::new();
         let data = renderer
-            .render_template(
+            .render_string(
                 Resource::get_text_content("content.md.hbs"),
                 &content,
             )
@@ -122,11 +121,7 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
         if !file_path.exists() {
             return Err(Error::new("The file is not exists."));
         }
-        let mut file = fs::File::open(file_path).map_err(|err| {
-            Error::new("Failed to open the file.").with_inner_error(&err)
-        })?;
-        let mut buffer = String::new();
-        file.read_to_string(&mut buffer).map_err(|err| {
+        let buffer = std::fs::read_to_string(&file_path).map_err(|err| {
             Error::new("Failed to read file.").with_inner_error(&err)
         })?;
 
@@ -138,17 +133,24 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
                 .with_inner_error(&err)
         })?;
 
-        let caps = re
+        let captures = re
             .captures(&buffer)
             .ok_or(Error::new("Failed to find mark info on the content."))?;
 
-        let mut content = serde_json::from_str::<ContentEntity>(&caps["mark"])
-            .map_err(|error| {
+        let mut content = serde_json::from_str::<ContentEntity>(
+            &captures["mark"],
+        )
+        .map_err(|error| {
+            Error::new("Failed to convert mark info on the content.")
+                .with_inner_error(&error)
+        })?;
+        content.content = captures["content"].to_string();
+        content.more =
+            serde_json::from_str(&captures["mark"]).map_err(|error| {
                 Error::new("Failed to convert mark info on the content.")
                     .with_inner_error(&error)
             })?;
 
-        content.content = caps["content"].to_string();
         content.path = filename.to_string();
         return Ok(content);
     }
