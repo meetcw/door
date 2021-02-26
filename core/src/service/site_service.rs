@@ -1,8 +1,8 @@
 use crate::infrastructure::{Environment, Error};
 use crate::model::Site;
 use crate::repository::save_default_template;
-use crate::repository::LocalThemeRepository;
-use crate::repository::ThemeRepository;
+use crate::repository::LocalTemplateRepository;
+use crate::repository::TemplateRepository;
 use crate::repository::{LocalSiteRepository, SiteRepository};
 use crate::template::{DefaultRenderer, Renderer};
 use crate::ContentService;
@@ -48,7 +48,9 @@ impl<'a> SiteService<'a> {
 
     pub fn create(&self) -> Result<Site> {
         let site = self.site_repository.create().map(|x| Site::from(x))?;
-        save_default_template(&self.environment.template_directory.join("default"))?;
+        save_default_template(
+            &self.environment.template_directory.join("default"),
+        )?;
         Ok(site)
     }
 
@@ -71,21 +73,22 @@ impl<'a> SiteService<'a> {
         self.clean()?;
         let site = self.load()?;
         let mut renderer = DefaultRenderer::new();
-        let theme_repository: Box<dyn ThemeRepository> =
-            Box::new(LocalThemeRepository::new(&self.environment));
-        let templates = theme_repository.layouts(&site.template);
-        debug!("Find {} render templates", templates.len());
-        for name in templates {
+        let template_repository: Box<dyn TemplateRepository> =
+            Box::new(LocalTemplateRepository::new(&self.environment));
+        let layouts = template_repository.layouts(&site.template);
+        debug!("Find {} render layouts", layouts.len());
+        for name in layouts {
             renderer
-                .register_template_string(
+                .register_layout_string(
                     &name,
-                    &theme_repository.layout(&site.template, &name).unwrap(),
+                    &template_repository.layout(&site.template, &name).unwrap(),
                 )
                 .unwrap();
         }
         let data = self.render_model()?;
-        for template in renderer.get_major_templates() {
-            let file_map = renderer.render(&template, &data)?;
+
+        for layout in renderer.get_layouts() {
+            let file_map = renderer.render(&layout, &data)?;
             for (name, content) in &file_map {
                 let file_path = self.environment.generate_directory.join(name);
                 DirBuilder::new()
@@ -102,7 +105,7 @@ impl<'a> SiteService<'a> {
             }
         }
 
-        theme_repository
+        template_repository
             .save_static_files(
                 &site.template,
                 &self.environment.generate_directory,

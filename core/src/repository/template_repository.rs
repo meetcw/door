@@ -36,37 +36,42 @@ pub fn save_default_template(path: &Path) -> Result<()> {
     return Ok(());
 }
 
-pub trait ThemeRepository {
+pub trait TemplateRepository {
     fn layouts(&self, name: &str) -> Vec<String>;
     fn layout(&self, name: &str, template_name: &str) -> Option<String>;
     fn save_static_files(&self, name: &str, path: &Path) -> Result<()>;
     fn load(&self, name: &str) -> Result<TemplateEntity>;
 }
 
-pub struct LocalThemeRepository<'a> {
+pub struct LocalTemplateRepository<'a> {
     environment: &'a Environment,
 }
 
-impl<'a> LocalThemeRepository<'a> {
-    pub fn new(environment: &'a Environment) -> LocalThemeRepository<'a> {
-        LocalThemeRepository { environment }
+impl<'a> LocalTemplateRepository<'a> {
+    pub fn new(environment: &'a Environment) -> LocalTemplateRepository<'a> {
+        LocalTemplateRepository { environment }
     }
 }
 
-impl<'a> ThemeRepository for LocalThemeRepository<'a> {
+impl<'a> TemplateRepository for LocalTemplateRepository<'a> {
     fn layouts(&self, name: &str) -> Vec<String> {
-        list_files(
-            &self
-                .environment
-                .template_directory
-                .join(name)
-                .join("layout"),
-            true,
-            |path| path.extension().unwrap() == "hbs",
-        )
+        let layout_path = self
+            .environment
+            .template_directory
+            .join(name)
+            .join("layout");
+        list_files(&layout_path, true, |path| {
+            path.extension().unwrap() == "hbs"
+        })
         .unwrap()
         .iter()
-        .map(|path| path.to_str().unwrap().to_string())
+        .map(|path| {
+            path.strip_prefix(&layout_path)
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .to_string()
+        })
         .collect()
     }
     fn layout(&self, name: &str, template_name: &str) -> Option<String> {

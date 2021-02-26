@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>{{title}}|{{@root/site/title}}</title>
+  <link rel="stylesheet" type="text/css" href="/assets/iconfont.css">
 </head>
 
 <body>
@@ -28,7 +29,7 @@
 
     </div>
     <div class="center">
-      <%= require("../share/header/index.ejs")() %>
+      <%= require('html-loader!../share/header/index.html').default %>
       <div class="content-wrapper">
         <article class="post">
           <header class="header">
@@ -49,9 +50,9 @@
             {{markdown content}}
           </div>
         </article>
-        <%= require("../share/comment/index.ejs")() %>
+        <%= require("html-loader!../share/comment/index.html").default %>
       </div>
-      <%= require("../share/footer/index.ejs")() %>
+      <%= require("html-loader!../share/footer/index.html").default %>
     </div>
   </div>
 </body>

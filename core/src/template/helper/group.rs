@@ -20,17 +20,30 @@ impl HelperDef for GroupHelper {
         let value = h.param(0).ok_or_else(|| {
             RenderError::new("Missing parameter for helper `group`")
         })?;
-        let group_path = h
-            .param(1)
-            .and_then(|v| v.value().as_str())
-            .ok_or(RenderError::new("Missing parameter `path` for helper `group`"))?;
+        let group_path = h.param(1).and_then(|v| v.value().as_str()).ok_or(
+            RenderError::new("Missing parameter `path` for helper `group`"),
+        )?;
+        let converter =
+            h.hash_get("converter").and_then(|v| v.value().as_str());
+
         let template = h.template();
         return match value.value() {
             Value::Array(ref list) => {
                 let mut groups: Vec<GroupItem> = vec![];
                 for item in list {
-                    let name =
-                        item.pointer(group_path).unwrap().as_str().unwrap();
+                    let name = match converter {
+                        Some(converter_template) => {
+                            let value = item.pointer(group_path).unwrap();
+                            r.render_template(converter_template, value)
+                                .unwrap()
+                        }
+                        None => item
+                            .pointer(group_path)
+                            .unwrap()
+                            .as_str()
+                            .unwrap()
+                            .to_string(),
+                    };
                     match groups.iter_mut().find(|g| g.name == name) {
                         Some(ref mut group) => group.list.push(item),
                         None => {
@@ -51,9 +64,7 @@ impl HelperDef for GroupHelper {
                 rc.pop_block();
                 Ok(())
             }
-            _ => {
-                Err(RenderError::new("Invalid parameter for helper `group`"))
-            }
+            _ => Err(RenderError::new("Invalid parameter for helper `group`")),
         };
     }
 }

@@ -9,7 +9,7 @@
 
 <body>
   <div class="index-wraper">
-    <%= require("../share/header/index.ejs")() %>
+    <%= require('html-loader!../share/header/index.html').default %>
     <div class="content-wrapper">
       <h1>最近</h1>
       <ul class="posts">
@@ -25,7 +25,7 @@
         {{/each}}
       </ul>
     </div>
-    <%= require("../share/footer/index.ejs")() %>
+    <%= require('html-loader!../share/footer/index.html').default %>
   </div>
 </body>
 

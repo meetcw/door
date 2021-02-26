@@ -4,21 +4,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>标签|{{@root/site/title}}</title>
+  <title>归档|{{@root/site/title}}</title>
 </head>
 
 <body>
-  <div class="tag-wraper">
-    <%= require("../share/header/index.ejs")() %>
+  <div class="archive-wraper">
+    <%= require("html-loader!../share/header/index.html").default %>
     <div class="content-wrapper">
-      <div class="tags">
-        {{#each @root/tags}}
-        <a href="#anchor_{{hash name}}" class="tag">{{name}}({{count list}})</a>
-        {{/each}}
-      </div>
-      {{#each @root/tags}}
       <div>
-        <h2 id="anchor_{{hash name}}">{{name}}</h2>
+        {{#each @root/archives}}
+        <h2>{{name}}</h2>
         <ul class="posts">
           {{#each list}}
           <li class="post">
@@ -31,11 +26,11 @@
           </li>
           {{/each}}
         </ul>
+        {{/each}}
       </div>
-      {{/each}}
     </div>
-    <%= require("../share/footer/index.ejs")() %>
-  </div>
+    <%= require("html-loader!../share/footer/index.html").default %>
+
 </body>
 
 </html>
