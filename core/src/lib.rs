@@ -18,6 +18,7 @@ extern crate roman;
 #[cfg_attr(test, macro_use)]
 extern crate serde_json;
 extern crate uuid;
+extern crate rhai;
 
 #[macro_export]
 macro_rules! function {

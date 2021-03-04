@@ -2,14 +2,14 @@
     <a class="one" href="">
         <div class="logo" style="background-image:url({{logo}})"></div>
         <div class="title">
-            <h1>{{@root/site/title}}</h1>
+            <h1>{{title}}</h1>
         </div>
     </a>
     <div class="toggle" >
         <i class="iconfont icon-menu"></i>
     </div>
     <ul class="menu">
-        {{#each @root/site/meta/menus}}
+        {{#each menus}}
         <li>
             <a href="{{path}}" target="{{target}}">{{title}}</a>
         </li>

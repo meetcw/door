@@ -6,6 +6,8 @@ mod concat;
 mod markdown;
 mod datetime;
 mod assign;
+mod count;
+mod hash;
 
 pub use file::FileHelper;
 pub use group::GroupHelper;
@@ -15,3 +17,5 @@ pub use concat::ConcatHelper;
 pub use markdown::{MarkdownTOCHelper,MarkdownHelper};
 pub use datetime::DatetimeHelper;
 pub use assign::AssignHelper;
+pub use count::CountHelper;
+pub use hash::HashHelper;

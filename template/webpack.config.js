@@ -5,10 +5,44 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
-var Config =
-  process.env.NODE_ENV == "production"
-    ? require("./production.config")
-    : require("./development.config");
+var Config = {}
+if (process.env.NODE_ENV == "production"){
+    let outputPath = path.resolve(__dirname, '../core/resource/template');
+    Config = {
+        mode : 'production',
+        getPageFilename : function (name){
+            return './layout/_' + name + '.hbs'
+        },
+        outputPath: outputPath,
+        outputFileName: "./static/assets/[name].js",
+        cssFileName: "./static/assets/[name].css",
+        copyRules :[
+            {
+                context: "static",
+                from: "**",
+                to: outputPath + "/",
+            }
+        ]
+    };
+} else {
+    let outputPath = path.resolve(__dirname, 'dist');
+    Config = {
+        mode : 'development',
+        getPageFilename : function (name){
+            return name + '.html'
+        },
+        outputPath: outputPath,
+        outputFileName: "./assets/[name].js",
+        cssFileName: "./assets/[name].css",
+        copyRules :[
+            {
+                context: "static/static",
+                from: "**",
+                to: outputPath + "/",
+            }
+        ]
+    };
+}
 
 function registerPage(config, name) {
   const basePath = "./src";
@@ -30,7 +64,7 @@ var config = {
   entry: {},
   output: {
     path: Config.outputPath,
-    filename: "./assets/[name].js",
+    filename: Config.outputFileName,
     publicPath: "/",
   },
   module: {
@@ -56,28 +90,11 @@ var config = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new MiniCssExtractPlugin({
-      filename: "./assets/[name].css",
+      filename: Config.cssFileName,
     }),
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "./static/layout/*",
-          to: Config.outputPath + "/layout/[name].[ext]",
-        },
-        {
-          from: "./static/assets/*",
-          to: Config.outputPath + "/assets/[name].[ext]",
-        },
-        {
-          from: "./static/*",
-          to: Config.outputPath + "/[name].[ext]",
-        },
-        // {
-        //   from: "./static/iconfont.*",
-        //   to: Config.outputPath + "/assets/[name].[ext]",
-        // },
-      ],
+      patterns: Config.copyRules,
     }),
   ],
   devServer: {
@@ -89,8 +106,8 @@ var config = {
 };
 
 registerPage(config, "index");
-registerPage(config, "tags");
-registerPage(config, "archives");
+registerPage(config, "tag");
+registerPage(config, "archive");
 registerPage(config, "post");
 
 module.exports = config;

@@ -6,6 +6,10 @@ use crate::repository::TemplateRepository;
 use crate::repository::{LocalSiteRepository, SiteRepository};
 use crate::template::{DefaultRenderer, Renderer};
 use crate::ContentService;
+use rhai::serde::{from_dynamic, to_dynamic};
+use rhai::Dynamic;
+use rhai::Engine;
+use rhai::Scope;
 use serde_json::Value;
 use std::fs::DirBuilder;
 use std::fs::File;
@@ -17,6 +21,7 @@ pub struct SiteService<'a> {
     environment: &'a Environment,
     content_service: ContentService<'a>,
     site_repository: Box<dyn SiteRepository + 'a>,
+    template_repository: Box<dyn TemplateRepository + 'a>,
 }
 
 impl<'a> SiteService<'a> {
@@ -28,6 +33,29 @@ impl<'a> SiteService<'a> {
             .search(|_| true, |a, b| a.create_time.cmp(&b.create_time))?;
         let mut model = serde_json::to_value(&site).unwrap();
         model["contents"] = serde_json::to_value(&contents).unwrap();
+
+        match self.template_repository.template_script(&site.template) {
+            Some(script_content) => {
+                let engine = Engine::new();
+                let script =
+                    engine.compile(&script_content).map_err(|error| {
+                        Error::new("Invalid template script.")
+                            .with_inner_error(&error)
+                    })?;
+                let mut scope = Scope::new();
+                let script_data = to_dynamic(model.clone()).unwrap();
+                scope.push_dynamic("model", script_data);
+                let result: Dynamic = engine
+                    .eval_ast_with_scope(&mut scope, &script)
+                    .map_err(|error| {
+                        Error::new("Invalid template script result.")
+                            .with_inner_error(&error)
+                    })?;
+
+                model = serde_json::to_value(result).unwrap();
+            }
+            None => (),
+        };
         debug!(
             "Create model\n{}",
             serde_json::to_string_pretty(&model).unwrap()
@@ -37,20 +65,19 @@ impl<'a> SiteService<'a> {
 
     pub fn new(environment: &'a Environment) -> SiteService {
         let site_repository = Box::new(LocalSiteRepository::new(environment));
+        let template_repository =
+            Box::new(LocalTemplateRepository::new(environment));
         let content_service = ContentService::new(environment);
-
         SiteService {
             environment,
             site_repository,
             content_service,
+            template_repository,
         }
     }
 
     pub fn create(&self) -> Result<Site> {
         let site = self.site_repository.create().map(|x| Site::from(x))?;
-        save_default_template(
-            &self.environment.template_directory.join("default"),
-        )?;
         Ok(site)
     }
 
@@ -71,23 +98,30 @@ impl<'a> SiteService<'a> {
 
     pub fn generate(&self) -> Result<()> {
         self.clean()?;
+        let template_path = self.environment.template_directory.join("default");
+        if !template_path.exists() {
+            save_default_template(
+                &self.environment.template_directory.join("default"),
+            )?;
+        }
         let site = self.load()?;
         let mut renderer = DefaultRenderer::new();
-        let template_repository: Box<dyn TemplateRepository> =
-            Box::new(LocalTemplateRepository::new(&self.environment));
-        let layouts = template_repository.layouts(&site.template);
+        let layouts = self.template_repository.layouts(&site.template);
         debug!("Find {} render layouts", layouts.len());
         for name in layouts {
             renderer
                 .register_layout_string(
                     &name,
-                    &template_repository.layout(&site.template, &name).unwrap(),
+                    &self
+                        .template_repository
+                        .layout(&site.template, &name)
+                        .unwrap(),
                 )
                 .unwrap();
         }
         let data = self.render_model()?;
 
-        for layout in renderer.get_layouts() {
+        for layout in renderer.get_major_layouts() {
             let file_map = renderer.render(&layout, &data)?;
             for (name, content) in &file_map {
                 let file_path = self.environment.generate_directory.join(name);
@@ -105,7 +139,7 @@ impl<'a> SiteService<'a> {
             }
         }
 
-        template_repository
+        self.template_repository
             .save_static_files(
                 &site.template,
                 &self.environment.generate_directory,
