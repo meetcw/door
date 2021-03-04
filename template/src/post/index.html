@@ -17,13 +17,13 @@
       </div>
       <div class="toc">
         <ol>
-          {{#mdtoc content as |toc|}}
+          {{#markdown-toc content as |toc|}}
           {{#each toc as |item|}}
           <li class="t{{item.level}}" >
             <a href="#anchor_{{hash item/name}}">{{item/name}}</a>
           </li>
           {{/each}}
-          {{/mdtoc}}
+          {{/markdown-toc}}
         </ol>
       </div>
 
@@ -36,7 +36,7 @@
             <h1 class="title"> {{title}} </h1>
             <div class="meta">
               <div class="date">
-                <time>{{dateformat create_time}}</time>
+                <time>{{datetime create_time}}</time>
               </div>
               <div class="tags">
                 <i class="iconfont icon-tag"></i>

@@ -40,7 +40,8 @@ pub trait TemplateRepository {
     fn layouts(&self, name: &str) -> Vec<String>;
     fn layout(&self, name: &str, template_name: &str) -> Option<String>;
     fn save_static_files(&self, name: &str, path: &Path) -> Result<()>;
-    fn load(&self, name: &str) -> Result<TemplateEntity>;
+    fn template(&self, name: &str) -> Result<TemplateEntity>;
+    fn template_script(&self, name: &str) -> Option<String>;
 }
 
 pub struct LocalTemplateRepository<'a> {
@@ -95,7 +96,7 @@ impl<'a> TemplateRepository for LocalTemplateRepository<'a> {
             .join("static");
         copy_files(&static_path, path, |_| true)
     }
-    fn load(&self, name: &str) -> Result<TemplateEntity> {
+    fn template(&self, name: &str) -> Result<TemplateEntity> {
         let template_path = self
             .environment
             .template_directory
@@ -120,5 +121,19 @@ impl<'a> TemplateRepository for LocalTemplateRepository<'a> {
                 .with_inner_error(&error)
         })?;
         return Ok(template);
+    }
+
+    fn template_script(&self, name: &str) -> Option<String> {
+        let template_script_path = self
+            .environment
+            .template_directory
+            .join(name)
+            .join("template.rhai");
+
+        if !template_script_path.exists() {
+            return None;
+        }
+
+        std::fs::read_to_string(&template_script_path).ok()
     }
 }

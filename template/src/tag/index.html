@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>标签|{{@root/site/title}}</title>
+  <title>标签|{{title}}</title>
 </head>
 
 <body>
@@ -12,18 +12,18 @@
     <%= require("html-loader!../share/header/index.html").default %>
     <div class="content-wrapper">
       <div class="tags">
-        {{#each @root/tags}}
+        {{#each tags}}
         <a href="#anchor_{{hash name}}" class="tag">{{name}}({{count list}})</a>
         {{/each}}
       </div>
-      {{#each @root/tags}}
+      {{#each tags}}
       <div>
         <h2 id="anchor_{{hash name}}">{{name}}</h2>
         <ul class="posts">
           {{#each list}}
           <li class="post">
             <div class="meta">
-              <time>{{dateformat create_time}}</time>
+              <time>{{datetime create_time}}</time>
             </div>
             <span>
               <a href="/post/{{id}}.html">{{title}}</a>

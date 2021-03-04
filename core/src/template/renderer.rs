@@ -78,6 +78,12 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         renderer
             .handlebars
             .register_helper("assign", Box::new(AssignHelper {}));
+        renderer
+            .handlebars
+            .register_helper("count", Box::new(CountHelper {}));
+        renderer
+            .handlebars
+            .register_helper("hash", Box::new(HashHelper {}));
         return renderer;
     }
 

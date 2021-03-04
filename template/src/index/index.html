@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>{{@root/site/title}}</title>
+  <title>{{title}}</title>
 </head>
 
 <body>
@@ -13,10 +13,10 @@
     <div class="content-wrapper">
       <h1>最近</h1>
       <ul class="posts">
-        {{#each @root/contents}}
+        {{#each contents}}
         <li class="post">
           <div class="meta">
-            <time>{{dateformat create_time}}</time>
+            <time>{{datetime create_time}}</time>
           </div>
           <span>
             <a href="/post/{{id}}.html">{{title}}</a>
