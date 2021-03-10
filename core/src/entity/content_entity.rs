@@ -18,8 +18,8 @@ pub struct ContentEntity {
     pub tags: Vec<String>,
     #[serde(default = "default_create_time")]
     pub create_time: DateTime<Utc>,
-    #[serde(default = "default_more")]
-    pub more: Value,
+    #[serde(default = "default_raw")]
+    pub raw: Value,
     #[serde(skip_deserializing, default = "default_content")]
     pub content: String,
     #[serde(skip)]
@@ -54,7 +54,7 @@ fn default_create_time() -> DateTime<Utc> {
     Utc::now()
 }
 
-fn default_more() -> Value {
+fn default_raw() -> Value {
     Value::Null
 }
 

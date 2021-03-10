@@ -12,8 +12,8 @@ pub struct SiteEntity {
     pub address: String,
     #[serde(default = "default_template")]
     pub template: String,
-    #[serde(default = "default_more")]
-    pub more: Value,
+    #[serde(default = "default_raw")]
+    pub raw: Value,
 }
 
 fn default_title() -> String {
@@ -36,6 +36,6 @@ fn default_template() -> String {
     "default".to_string()
 }
 
-fn default_more() -> Value {
-    serde_json::from_str("{}").unwrap()
+fn default_raw() -> Value {
+    Value::Null
 }

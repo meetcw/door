@@ -1,17 +1,17 @@
 <header class="header-wrapper">
     <a class="one" href="">
-        <div class="logo" style="background-image:url({{logo}})"></div>
+        <div class="logo" style="background-image:url({{#if @root.logo}}{{path @root.address @root.logo}}{{else}}{{path @root.address "logo.png"}}{{/if}})"></div>
         <div class="title">
-            <h1>{{title}}</h1>
+            <h1>{{@root.title}}</h1>
         </div>
     </a>
     <div class="toggle" >
         <i class="iconfont icon-menu"></i>
     </div>
     <ul class="menu">
-        {{#each menus}}
+        {{#each @root.menus}}
         <li>
-            <a href="{{path}}" target="{{target}}">{{title}}</a>
+            <a href="{{path @root.address this.path}}" target="{{this.target}}">{{this.name}}</a>
         </li>
         {{/each}}
     </ul>

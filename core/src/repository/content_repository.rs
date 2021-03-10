@@ -145,7 +145,7 @@ impl<'a> ContentRepository for LocalContentRepository<'a> {
                 .with_inner_error(&error)
         })?;
         content.content = captures["content"].to_string();
-        content.more =
+        content.raw =
             serde_json::from_str(&captures["mark"]).map_err(|error| {
                 Error::new("Failed to convert mark info on the content.")
                     .with_inner_error(&error)

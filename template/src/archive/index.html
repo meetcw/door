@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>归档|{{title}}</title>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>归档|{{@root.title}}</title>
+
+  <link rel="stylesheet" type="text/css" href="/assets/iconfont.css">
 </head>
 
 <body>
@@ -12,16 +14,16 @@
     <%= require("html-loader!../share/header/index.html").default %>
     <div class="content-wrapper">
       <div>
-        {{#each archives}}
-        <h2>{{name}}</h2>
+        {{#each @root.archives}}
+        <h2>{{this.name}}</h2>
         <ul class="posts">
-          {{#each list}}
+          {{#each contents}}
           <li class="post">
             <div class="meta">
-              <time>{{dateformat create_time}}</time>
+              <time>{{datetime this.create_time}}</time>
             </div>
             <span>
-              <a href="/post/{{id}}.html">{{title}}</a>
+              <a href="{{path @root.address "post" (string (this.id) ".html")}}">{{this.title}}</a>
             </span>
           </li>
           {{/each}}

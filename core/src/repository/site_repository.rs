@@ -79,7 +79,7 @@ impl<'a> SiteRepository for LocalSiteRepository<'a> {
                     .with_inner_error(&error)
             })?;
 
-        site.more = serde_json::from_str(&buffer).map_err(|error| {
+        site.raw = serde_json::from_str(&buffer).map_err(|error| {
             Error::new("Failed to resolve the config file.")
                 .with_inner_error(&error)
         })?;

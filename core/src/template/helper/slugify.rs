@@ -1,11 +1,9 @@
 use handlebars::*;
-use serde_json::Value;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+use slug::slugify;
 
-pub struct HashHelper;
+pub struct SlugifyHelper;
 
-impl HelperDef for HashHelper {
+impl HelperDef for SlugifyHelper {
     fn call<'reg: 'rc, 'rc>(
         &self,
         h: &Helper,
@@ -17,10 +15,8 @@ impl HelperDef for HashHelper {
         if let Some(param) = h.param(0) {
             let data = param.value();
             if data.is_string() {
-                let mut state = DefaultHasher::new();
-                data.as_str().unwrap().hash(&mut state);
-                let result = state.finish();
-                out.write(&result.to_string())?;
+                let result = slugify(data.as_str().unwrap());
+                out.write(&result)?;
             }
         }
         Ok(())

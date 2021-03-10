@@ -4,9 +4,9 @@
   overflow-x: hidden;
 
   .side {
-    background-color: @color-a;
+    background-color: @strong-background-color;
     height: 100%;
-    box-shadow: 0px 0px 30px -9px @color-e;
+    box-shadow: 0px 0px 30px -9px @week-week-foreground-color;
     z-index: 100;
 
     .toc {
@@ -23,7 +23,7 @@
 
         &::before {
           content: '# ';
-          color: @color-g;
+          color: @accent-color;
         }
       }
 
@@ -68,10 +68,10 @@
         li {
           background: none;
           text-decoration: none;
-          color: @color-f;
+          color: @foreground-color;
 
           &:hover {
-            color: @color-d;
+            color: @anti-accent-color;
           }
         }
       }
@@ -79,10 +79,10 @@
 
     .toggle {
       border-radius: 2px;
-      box-shadow: 20px 0px 30px -9px @color-e;
+      box-shadow: 20px 0px 30px -9px @week-foreground-color;
       height: 60px;
       width: 20px;
-      background-color: @color-a;
+      background-color: @strong-background-color;
       position: fixed;
       left: 0px;
       top: 46%;
@@ -109,7 +109,7 @@
     .header {
       .title {
         text-transform: none;
-        color: @color-g;
+        color: @accent-color;
       }
 
       .meta {
@@ -117,7 +117,7 @@
         margin-bottom: 1rem;
 
         * {
-          color: @color-f;
+          color: @foreground-color;
           font-size: 0.85rem;
         }
       }
@@ -170,23 +170,26 @@
       h4,
       h5,
       h6 {
+        position: relative;
         font-weight: 300;
       }
 
-      h1 {
+      h1,h2,h3,h4,h5,h6 {
         &::before {
-          content: '# ';
-          color: @color-g;
+          position: absolute;
+          left: -1em;
+          content: '#';
+          color: @accent-color;
         }
       }
 
       a {
-        color: @color-f;
-        .underline(5px, @color-f);
+        color: @foreground-color;
+        .underline(5px, @foreground-color);
 
         &:hover {
-          color: @color-d;
-          .underline(5px, @color-d);
+          color: @anti-accent-color;
+          .underline(5px, @anti-accent-color);
         }
       }
     }

@@ -15,8 +15,8 @@
    }
 
    body {
-       color: @color-f;
-       background-color: @color-b;
+       color: @foreground-color;
+       background-color: @background-color;
        font-display: swap;
        font-size: @font-size;
        font-family: @font-family;
@@ -36,7 +36,7 @@
        font-size: 1.5em;
        font-style: normal;
        font-weight: 700;
-       color: @color-f;
+       color: @foreground-color;
        margin-top: 1rem;
        margin-bottom: 1rem;
        display: block;
@@ -50,7 +50,7 @@
        letter-spacing: normal;
        margin-top: 1rem;
        margin-bottom: 0.5rem;
-       color: @color-f;
+       color: @foreground-color;
        display: block;
    }
 
@@ -58,7 +58,7 @@
        font-size: 0.9rem;
        font-weight: bold;
        text-decoration: underline;
-       color: @color-f;
+       color: @foreground-color;
    }
 
    h4,
@@ -66,8 +66,8 @@
    h6 {
        font-size: 0.9rem;
        font-weight: normal;
-       color: @color-f;
-       border-bottom: 1px dashed @color-f;
+       color: @foreground-color;
+       border-bottom: 1px dashed @foreground-color;
        display: inline;
        text-decoration: none;
    }
@@ -81,7 +81,7 @@
    }
 
    hr {
-       border: 1px dashed @color-f;
+       border: 1px dashed @foreground-color;
    }
 
    strong {
@@ -149,8 +149,8 @@
    th {
        font-size: @font-size - 1px;
        font-weight: bold;
-       color: @color-f;
-       border-bottom: 1px dashed #ccc;
+       color: @foreground-color;
+       border-bottom: 1px dashed @strong-foreground-color;
        padding: 8px 8px;
    }
 
@@ -168,7 +168,7 @@
        margin: 1rem 0;
        padding: 10px 15px;
        border-radius: 4px;
-       background: @color-f;
+       background: @strong-strong-background-color;
        font-family: "Menlo", "Meslo LG", monospace;
        -webkit-border-radius: 4px;
    }
@@ -181,29 +181,28 @@
    a {
        text-decoration: none;
        transition: color 0.3s ease;
-       color: @color-f;
+       color: @foreground-color;
        cursor: pointer;
    }
 
    a:hover {
-       .underline(6px, @color-g);
-       color: @color-d;
+       .underline(6px, @accent-color);
+       color: @anti-accent-color;
    }
 
    blockquote {
-       background: inherit;
-       color: #ccffb6;
-       border-left: 0px solid #ccc;
-       margin: 1rem 10px;
-       padding: 0.5em 10px;
+       margin: 0.5rem;
+       padding: 0.5rem;
        quotes: '\201C''\201D''\2018''\2019';
+       color: @week-foreground-color;
+       font-style: italic;
 
        p {
            margin: 0;
        }
 
        &:before {
-           color: #ccffb6;
+           color: @strong-strong-accent-color;
            content: '\201C';
            font-size: 2em;
            line-height: 0.1em;
@@ -212,17 +211,17 @@
        }
 
        footer {
-           color: #666;
+           color: @week-week-foreground-color;
            font-size: 11px;
            margin: line-height 0;
 
            a {
-               color: #666;
-               background-image: linear-gradient(transparent, transparent 5px, #666 5px, #666);
+               color: @week-week-foreground-color;
+               background-image: linear-gradient(transparent, transparent 5px, @week-week-foreground-color 5px, @week-week-foreground-color);
 
                &:hover {
-                   color: #999;
-                   background-image: linear-gradient(transparent, transparent 4px, #999 4px, #999);
+                   color: @week-foreground-color;
+                   background-image: linear-gradient(transparent, transparent 4px, @week-foreground-color 4px, @week-foreground-color);
                }
            }
 
@@ -240,7 +239,7 @@
 
        &:before {
            content: '# ';
-           color: @color-g;
+           color: @accent-color;
            position: absolute;
            left: -1em;
            top: -4px;

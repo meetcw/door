@@ -6,14 +6,16 @@ extern crate structopt;
 
 use colored::*;
 use core::{ContentService, SiteService};
+use log::LevelFilter;
 use simple_logger::SimpleLogger;
+use std::str::FromStr;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "door")]
 struct ApplicationArguments {
-    #[structopt(long, help = "Activate debug mode")]
-    debug: bool,
+    #[structopt(long, default_value = "Info", help = "Activate debug mode")]
+    debug: String,
     #[structopt(subcommand)]
     command: DoorCommand,
 }
@@ -43,13 +45,17 @@ enum ContentCommand {
 fn main() {
     let environment = core::Environment::new(".", ".");
     let matches = ApplicationArguments::from_args();
-    if matches.debug {
-        SimpleLogger::new()
-            .with_level(log::LevelFilter::Trace)
-            .init()
-            .unwrap();
-        debug!("{:?}", matches);
-    }
+    let log_level = match LevelFilter::from_str(&matches.debug) {
+        Ok(level) => level,
+        Err(_) => LevelFilter::Off,
+    };
+    SimpleLogger::new()
+        .with_level(LevelFilter::Off)
+        .with_module_level("core",log_level)
+        .with_module_level("door",log_level)
+        .init()
+        .unwrap();
+    debug!("{:?}", matches);
     let result = match matches.command {
         DoorCommand::Init => {
             let site_service = SiteService::new(&environment);

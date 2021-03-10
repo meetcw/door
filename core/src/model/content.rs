@@ -12,9 +12,9 @@ pub struct Content {
     pub draft: bool,
     pub tags: Vec<String>,
     pub create_time: DateTime<Utc>,
-    pub more: Value,
     pub content: String,
     pub path: String,
+    pub raw: Value,
 }
 
 impl From<ContentEntity> for Content {
@@ -27,7 +27,7 @@ impl From<ContentEntity> for Content {
             draft: entity.draft.clone(),
             tags: entity.tags.clone(),
             create_time: entity.create_time.clone(),
-            more: entity.more.clone(),
+            raw: entity.raw.clone(),
             content: entity.content.clone(),
             path: entity.path.clone(),
         }

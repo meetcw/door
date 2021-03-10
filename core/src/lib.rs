@@ -19,6 +19,8 @@ extern crate roman;
 extern crate serde_json;
 extern crate uuid;
 extern crate rhai;
+extern crate slug;
+extern crate path_absolutize;
 
 #[macro_export]
 macro_rules! function {

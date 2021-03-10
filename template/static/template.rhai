@@ -1,12 +1,18 @@
 model.tags = [];
+model.fill_with(model.raw);
+
 for content in model.contents {
-    for tag in content.tags {
-        if model.tags.some(|t|t == tag) {
-            let group = model.tags.filter(|t|t.tag == tag )[0];
+    content.fill_with(content.raw);
+}
+
+for content in model.contents {
+    for name in content.tags {
+        if model.tags.some(|t|t.name == name) {
+            let group = model.tags.filter(|t|t.name == name )[0];
             group.contents.push(content);
         } else {
             let group = #{
-                tag: tag,
+                name: name,
                 contents: [content]
             };
             model.tags.push(group);
@@ -16,31 +22,17 @@ for content in model.contents {
 
 model.archives = [];
 for content  in model.contents {
-    let date = content.create_time.split("T")[0];
-    if model.archives.some(|a|a.date == date) {
-        let group = model.archives.filter(|a|a.date == date)[0];
+    let name = content.create_time.split("T")[0];
+    if model.archives.some(|a|a.name == name) {
+        let group = model.archives.filter(|a|a.name == name)[0];
         group.contents.push(content);
     } else {
         let group = #{
-            date: date,
+            name: name,
             contents: [content]
         };
         model.archives.push(group);
     }
 }
-
-model.menus = [#{
-    name: "Home",
-    path: "/"
-},#{
-    name: "Tag",
-    path: "/"
-},#{
-    name: "Archive",
-    path: "/"
-},#{
-    name: "Github",
-    path: "/"
-}];
 
 model

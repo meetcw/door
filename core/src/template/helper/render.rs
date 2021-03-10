@@ -4,11 +4,11 @@ use std::sync::Weak;
 
 use handlebars::*;
 
-pub struct FileHelper {
+pub struct RenderHelper {
     pub file_map: Weak<RwLock<HashMap<String, String>>>,
 }
 
-impl HelperDef for FileHelper {
+impl HelperDef for RenderHelper {
     fn call<'reg: 'rc, 'rc>(
         &self,
         h: &Helper<'reg, 'rc>,
