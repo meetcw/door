@@ -1,11 +1,11 @@
 <footer class="footer-wrapper">
-    <div class="footer-left"> Copyright © 2018 BAIYAN </div>
+    <div class="footer-left"> Copyright © 2021 {{@root.author}} </div>
     <div class="footer-right">
         <nav>
             <ul>
-                {{#each menus}}
+                {{#each @root.menus}}
                 <li>
-                    <a href="{{path}}" target="{{target}}">{{title}}</a>
+                    <a href="{{path @root.address path}}" target="{{this.target}}">{{this.name}}</a>
                 </li>
                 {{/each}}
             </ul>

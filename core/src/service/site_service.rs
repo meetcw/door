@@ -6,7 +6,7 @@ use crate::repository::TemplateRepository;
 use crate::repository::{LocalSiteRepository, SiteRepository};
 use crate::template::{DefaultRenderer, Renderer};
 use crate::ContentService;
-use rhai::serde::{from_dynamic, to_dynamic};
+use rhai::serde::to_dynamic;
 use rhai::Dynamic;
 use rhai::Engine;
 use rhai::Scope;
@@ -27,7 +27,6 @@ pub struct SiteService<'a> {
 impl<'a> SiteService<'a> {
     fn render_model(&self) -> Result<Value> {
         let site = self.load()?;
-
         let contents = self
             .content_service
             .search(|_| true, |a, b| a.create_time.cmp(&b.create_time))?;
@@ -43,7 +42,12 @@ impl<'a> SiteService<'a> {
                             .with_inner_error(&error)
                     })?;
                 let mut scope = Scope::new();
-                let script_data = to_dynamic(model.clone()).unwrap();
+                let script_data =
+                    to_dynamic(model.clone()).map_err(|error| {
+                        Error::new("Invalid template model.")
+                            .with_inner_error(&error)
+                    })?;
+
                 scope.push_dynamic("model", script_data);
                 let result: Dynamic = engine
                     .eval_ast_with_scope(&mut scope, &script)
@@ -139,12 +143,10 @@ impl<'a> SiteService<'a> {
             }
         }
 
-        self.template_repository
-            .save_static_files(
-                &site.template,
-                &self.environment.generate_directory,
-            )
-            .unwrap();
+        self.template_repository.save_static_files(
+            &site.template,
+            &self.environment.generate_directory,
+        )?;
         Ok(())
     }
 

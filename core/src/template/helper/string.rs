@@ -1,8 +1,8 @@
 use handlebars::*;
 
-pub struct ConcatHelper;
+pub struct StringHelper;
 
-impl HelperDef for ConcatHelper {
+impl HelperDef for StringHelper {
     fn call<'reg: 'rc, 'rc>(
         &self,
         h: &Helper,

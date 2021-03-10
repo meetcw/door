@@ -2,9 +2,10 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>标签|{{title}}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>标签|{{@root.title}}</title>
+  <link rel="stylesheet" type="text/css" href="/assets/iconfont.css">
 </head>
 
 <body>
@@ -12,21 +13,21 @@
     <%= require("html-loader!../share/header/index.html").default %>
     <div class="content-wrapper">
       <div class="tags">
-        {{#each tags}}
-        <a href="#anchor_{{hash name}}" class="tag">{{name}}({{count list}})</a>
+        {{#each this.tags}}
+        <a href="#tag-{{slugify this.name}}" class="tag">#{{this.name}}({{count this.contents}})</a>
         {{/each}}
       </div>
       {{#each tags}}
       <div>
-        <h2 id="anchor_{{hash name}}">{{name}}</h2>
+        <h2 id="tag-{{slugify this.name}}">#{{this.name}}</h2>
         <ul class="posts">
-          {{#each list}}
+          {{#each this.contents}}
           <li class="post">
             <div class="meta">
-              <time>{{datetime create_time}}</time>
+              <time>{{datetime this.create_time}}</time>
             </div>
             <span>
-              <a href="/post/{{id}}.html">{{title}}</a>
+              <a href="{{path @root.address "post" (string (this.id) ".html")}}">{{this.title}}</a>
             </span>
           </li>
           {{/each}}

@@ -1,7 +1,7 @@
 
 {{#each contents}}
-{{#file (concat "./post/" (id) ".html")}}
+{{#render (string "./post/" (this.id) ".html")}}
 {{> _post.hbs}}
-{{/file}}
+{{/render}}
 {{/each}}
 

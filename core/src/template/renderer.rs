@@ -45,7 +45,7 @@ impl<'a> Renderer for DefaultRenderer<'a> {
         let handlebars = Handlebars::new();
 
         let file_map = Arc::new(RwLock::new(HashMap::new()));
-        let file_helper = Box::new(FileHelper {
+        let render_helper = Box::new(RenderHelper {
             file_map: Arc::downgrade(&file_map),
         });
 
@@ -53,37 +53,40 @@ impl<'a> Renderer for DefaultRenderer<'a> {
             handlebars,
             file_map,
         };
+        renderer.handlebars.register_helper("render", render_helper);
+        renderer
+            .handlebars
+            .register_helper("json", Box::new(JsonHelper {}));
         renderer
             .handlebars
             .register_helper("group", Box::new(GroupHelper {}));
         renderer
             .handlebars
             .register_helper("sort", Box::new(SortHelper {}));
-        renderer.handlebars.register_helper("file", file_helper);
         renderer
             .handlebars
-            .register_helper("json", Box::new(JsonHelper {}));
+            .register_helper("markdown", Box::new(MarkdownHTMLHelper {}));
         renderer
             .handlebars
-            .register_helper("concat", Box::new(ConcatHelper {}));
-        renderer
-            .handlebars
-            .register_helper("markdown", Box::new(MarkdownHelper {}));
-        renderer
-            .handlebars
-            .register_helper("markdown-toc", Box::new(MarkdownTOCHelper {}));
+            .register_helper("toc", Box::new(MarkdownTOCHelper {}));
         renderer
             .handlebars
             .register_helper("datetime", Box::new(DatetimeHelper {}));
         renderer
             .handlebars
-            .register_helper("assign", Box::new(AssignHelper {}));
-        renderer
-            .handlebars
             .register_helper("count", Box::new(CountHelper {}));
         renderer
             .handlebars
-            .register_helper("hash", Box::new(HashHelper {}));
+            .register_helper("identity", Box::new(IdentityHelper {}));
+        renderer
+            .handlebars
+            .register_helper("slugify", Box::new(SlugifyHelper {}));
+        renderer
+            .handlebars
+            .register_helper("string", Box::new(StringHelper {}));
+        renderer
+            .handlebars
+            .register_helper("path", Box::new(PathHelper {}));
         return renderer;
     }
 
@@ -146,7 +149,10 @@ impl<'a> Renderer for DefaultRenderer<'a> {
     where
         T: Serialize,
     {
-        self.handlebars.render(name, data).unwrap();
+        self.handlebars.render(name, data).map_err(|error| {
+            Error::new(&format!("Failed to render template `{}`", name))
+                .with_inner_error(&error)
+        })?;
         let mut writeable_file_map = self.file_map.write().unwrap();
         let file_map = writeable_file_map.clone();
         writeable_file_map.clear();

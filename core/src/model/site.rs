@@ -8,7 +8,7 @@ pub struct Site {
     pub description: String,
     pub address: String,
     pub template: String,
-    pub more: Value,
+    pub raw: Value,
 }
 
 impl From<SiteEntity> for Site {
@@ -19,7 +19,7 @@ impl From<SiteEntity> for Site {
             description: entity.description,
             address: entity.address,
             template: entity.template,
-            more: entity.more,
+            raw: entity.raw,
         }
     }
 }

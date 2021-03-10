@@ -7,38 +7,38 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var Config = {}
 if (process.env.NODE_ENV == "production"){
-    let outputPath = path.resolve(__dirname, '../core/resource/template');
+    let outputPath = path.resolve(__dirname, '../core/resource/template/static');
     Config = {
         mode : 'production',
         getPageFilename : function (name){
-            return './layout/_' + name + '.hbs'
+            return '../layout/_' + name + '.hbs'
         },
         outputPath: outputPath,
-        outputFileName: "./static/assets/[name].js",
-        cssFileName: "./static/assets/[name].css",
+        outputFileName: "assets/[name].js",
+        cssFileName: "assets/[name].css",
         copyRules :[
             {
                 context: "static",
                 from: "**",
-                to: outputPath + "/",
+                to: outputPath + "/../",
             }
         ]
     };
 } else {
-    let outputPath = path.resolve(__dirname, 'dist');
+    let outputPath = path.resolve("/home/maf/Projects/Temporary/site/template/default/static");
     Config = {
         mode : 'development',
         getPageFilename : function (name){
-            return name + '.html'
+            return '../layout/_' + name + '.hbs'
         },
         outputPath: outputPath,
-        outputFileName: "./assets/[name].js",
-        cssFileName: "./assets/[name].css",
+        outputFileName: "assets/[name].js",
+        cssFileName: "assets/[name].css",
         copyRules :[
             {
-                context: "static/static",
+                context: "static",
                 from: "**",
-                to: outputPath + "/",
+                to: outputPath + "/../",
             }
         ]
     };
@@ -56,6 +56,8 @@ function registerPage(config, name) {
       filename: Config.getPageFilename(name),
       chunksSortMode: "auto",
       chunks: [name],
+      // meta: { viewport:"width=device-width, initial-scale=1, maximum-scale=1", charset:"utf-8" },
+      minify: false
     })
   );
 }

@@ -42,10 +42,53 @@ impl HelperDef for MarkdownTOCHelper {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct MarkdownHelper;
 
-impl HelperDef for MarkdownHelper {
+fn markdown_toc<S: AsRef<str>>(
+    markdown_input: S,
+) -> Result<Vec<MarkdownTOCItem>, RenderError> {
+    let options = Options::all();
+    let parser = Parser::new_ext(markdown_input.as_ref(), options);
+
+    let mut in_header = false;
+    let mut header_text = String::new();
+    let mut header_index = 0;
+    let mut toc_list = vec![];
+    for event in parser {
+        match event {
+            Event::Start(Tag::Heading(_level)) => {
+                in_header = true;
+            }
+            Event::Text(text) => {
+                if in_header {
+                    let text = text.into_string();
+                    header_text.push_str(&text);
+                }
+            }
+            Event::End(Tag::Heading(level)) => {
+                header_index += 1;
+                let anchor = format!(
+                    "toc-{}",
+                    roman::to(header_index).unwrap().to_lowercase()
+                );
+                let toc = MarkdownTOCItem {
+                    name: header_text.clone(),
+                    anchor: anchor,
+                    level: level,
+                };
+                toc_list.push(toc);
+                in_header = false;
+                header_text.clear();
+            }
+            _ => {}
+        }
+    }
+    return Ok(toc_list);
+}
+
+#[derive(Clone, Copy)]
+pub struct MarkdownHTMLHelper;
+
+impl HelperDef for MarkdownHTMLHelper {
     fn call<'reg: 'rc, 'rc>(
         &self,
         h: &Helper<'reg, 'rc>,
@@ -93,47 +136,4 @@ fn markdown_to_html<S: AsRef<str>>(
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
     return Ok(html_output);
-}
-
-fn markdown_toc<S: AsRef<str>>(
-    markdown_input: S,
-) -> Result<Vec<MarkdownTOCItem>, RenderError> {
-    let options = Options::all();
-    let parser = Parser::new_ext(markdown_input.as_ref(), options);
-
-    let mut in_header = false;
-    let mut header_text = String::new();
-    let mut header_index = 0;
-    let mut toc_list = vec![];
-    for event in parser {
-        match event {
-            Event::Start(Tag::Heading(_level)) => {
-                in_header = true;
-            }
-            Event::Text(text) => {
-                if in_header {
-                    info!("{:?}", text);
-                    let text = text.into_string();
-                    header_text.push_str(&text);
-                }
-            }
-            Event::End(Tag::Heading(level)) => {
-                header_index += 1;
-                let anchor = format!(
-                    "toc-{}",
-                    roman::to(header_index).unwrap().to_lowercase()
-                );
-                let toc = MarkdownTOCItem {
-                    name: header_text.clone(),
-                    anchor: anchor,
-                    level: level,
-                };
-                toc_list.push(toc);
-                in_header = false;
-                header_text.clear();
-            }
-            _ => {}
-        }
-    }
-    return Ok(toc_list);
 }

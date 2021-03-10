@@ -13,7 +13,7 @@ impl HelperDef for JsonHelper {
     ) -> HelperResult {
         if let Some(param) = h.param(0) {
             let data = param.value();
-            out.write(&data.to_string())?;
+            out.write(&serde_json::to_string(data).unwrap())?;
         }
         Ok(())
     }
