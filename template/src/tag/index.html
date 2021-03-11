@@ -9,7 +9,9 @@
 </head>
 
 <body>
-  <div class="tag-wraper">
+
+  <div class="root">
+  <div class="wrapper">
     <%= require("html-loader!../share/header/index.html").default %>
     <div class="content-wrapper">
       <div class="tags">
@@ -36,6 +38,7 @@
       {{/each}}
     </div>
     <%= require("html-loader!../share/footer/index.html").default %>
+  </div>
   </div>
 </body>
 

@@ -1,11 +1,9 @@
 @import url('../share/style.less');
 
-.index-wraper {
-  padding: 32px;
+.wrapper {
   h1 {
     color: @accent-color;
   }
-
   .posts {
     padding: 0;
 
@@ -13,33 +11,21 @@
       list-style-type: none;
       margin-left: 0;
       margin-bottom: 1rem;
-
       .meta {
         display: inline-block;
-        font-size: 14px;
+        font-size: 1rem;
         color: @week-week-foreground-color;
-        min-width: 100px;
-        margin-right: 16px;
+        min-width: 7rem;
+        margin-right: 1.2rem;
       }
     }
   }
 
   @media (min-width: @screen-size) {
     & {
-      width: 100%;
-      max-width: 900px;
-      margin: 0px auto;
-
-      .content-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 16px;
-      }
-
       .posts .post {
         display: flex;
-        margin-bottom: 5px;
-
+        margin-bottom: 0.4rem;
         .meta {
           text-align: left;
         }
@@ -48,10 +34,4 @@
 
   }
 
-  @media (max-width: @screen-size) {
-    & {
-      padding: 16px;
-    }
-
-  }
 }

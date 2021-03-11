@@ -2,33 +2,32 @@
 <html>
 
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>{{this.title}}|{{@root.title}}</title>
   <link rel="stylesheet" type="text/css" href="/assets/iconfont.css">
 </head>
 
 <body>
-  <div class="post-wrapper">
-
-    <div class="side">
+  <div class="root">
+    <div class="slide-wrapper">
       <div class="toggle">
-      <i class="iconfont icon-dian"></i>
       </div>
-      <div class="toc">
-        <ol>
-          {{#toc this.content}}
-          {{#each this}}
-          <li class="t{{this.level}}" >
-            <a href="#{{this.anchor}}">{{this.name}}</a>
-          </li>
-          {{/each}}
-          {{/toc}}
-        </ol>
+      <div class="slide-content">
+        <div class="toc">
+          <ol>
+            {{#toc this.content}}
+            {{#each this}}
+            <li class="t{{this.level}}">
+              <a href="#{{this.anchor}}">{{this.name}}</a>
+            </li>
+            {{/each}}
+            {{/toc}}
+          </ol>
+        </div>
       </div>
-
     </div>
-    <div class="center">
+    <div class="wrapper">
       <%= require('html-loader!../share/header/index.html').default %>
       <div class="content-wrapper">
         <article class="post">
@@ -41,7 +40,7 @@
               <div class="tags">
                 <i class="iconfont icon-tag"></i>
                 {{#each this.tags}}
-                <a href="{{path @root.address (string "tag.html#tag-" (slugify this))}}/" class="tag">#{{this}}</a>
+                <a href="{{path @root.address (string "tag.html#tag-" (slugify this))}}" class="tag">#{{this}}</a>
                 {{/each}}
               </div>
             </div>
@@ -50,15 +49,11 @@
             {{markdown this.content}}
           </div>
         </article>
-        <!-- Comment -->
-        <script src="https://utteranc.es/client.js"
-                repo="{{@root.raw.comment.repository}}"
-                issue-number="{{this.id}}"
-                theme="github-dark"
-                crossorigin="anonymous"
-                async>
-        </script>
       </div>
+      <!-- Comment -->
+      <script src="https://utteranc.es/client.js" repo="{{@root.raw.comment.repository}}" issue-number="{{this.id}}"
+        theme="github-dark" crossorigin="anonymous" async>
+      </script>
       <%= require("html-loader!../share/footer/index.html").default %>
     </div>
   </div>

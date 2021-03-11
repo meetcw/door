@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>归档|{{title}}</title>
+<script defer src="/assets/archive.js"></script><link href="/assets/archive.css" rel="stylesheet"></head>
+
+<body>
+  <div class="archive-wraper">
+    <header class="header-wrapper"> <a class="one" href=""> <div class="logo" style="background-image:url('{{#if @root.logo}}{{@root.logo}}{{else}}/logo.png{{/if}}')"></div> <div class="title"> <h1>{{title}}</h1> </div> </a> <div class="toggle"> <i class="iconfont icon-menu"></i> </div> <ul class="menu"> {{#each @root.menus}} <li> <a href="{{path}}" target="{{target}}">{{name}}</a> </li> {{/each}} </ul> </header> 
+    <div class="content-wrapper">
+      <div>
+        {{#each archives}}
+        <h2>{{name}}</h2>
+        <ul class="posts">
+          {{#each contents}}
+          <li class="post">
+            <div class="meta">
+              <time>{{datetime create_time}}</time>
+            </div>
+            <span>
+              <a href="/post/{{id}}.html">{{title}}</a>
+            </span>
+          </li>
+          {{/each}}
+        </ul>
+        {{/each}}
+      </div>
+    </div>
+    <footer class="footer-wrapper"> <div class="footer-left"> Copyright © 2018 BAIYAN </div> <div class="footer-right"> <nav> <ul> {{#each @root.menus}} <li> <a href="{{path}}" target="{{target}}">{{name}}</a> </li> {{/each}} </ul> </nav> </div> </footer> 
+
+</body>
+
+</html>
