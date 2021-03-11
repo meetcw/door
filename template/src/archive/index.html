@@ -10,7 +10,8 @@
 </head>
 
 <body>
-  <div class="archive-wraper">
+  <div class="root">
+  <div class="wrapper">
     <%= require("html-loader!../share/header/index.html").default %>
     <div class="content-wrapper">
       <div>
@@ -30,9 +31,10 @@
         </ul>
         {{/each}}
       </div>
-    </div>
     <%= require("html-loader!../share/footer/index.html").default %>
+    </div>
 
+    </div>
 </body>
 
 </html>

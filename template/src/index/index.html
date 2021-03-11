@@ -10,7 +10,9 @@
 </head>
 
 <body>
-  <div class="index-wraper">
+
+  <div class="root">
+  <div class="wrapper">
     <%= require('html-loader!../share/header/index.html').default %>
     <div class="content-wrapper">
       <h1>最近</h1>
@@ -28,6 +30,7 @@
       </ul>
     </div>
     <%= require('html-loader!../share/footer/index.html').default %>
+  </div>
   </div>
 </body>
 

@@ -1,8 +1,6 @@
 @import url('../share/style.less');
 
-.archive-wraper {
-  padding: 32px;
-
+.wrapper {
   h1 {
     color: @accent-color;
   }
@@ -27,16 +25,6 @@
 
   @media (min-width: @screen-size) {
     & {
-      width: 100%;
-      max-width: 900px;
-      margin: 0px auto;
-
-      .content-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 16px;
-      }
-
       .posts .post {
         display: flex;
         margin-bottom: 5px;
@@ -45,13 +33,6 @@
           text-align: left;
         }
       }
-    }
-
-  }
-
-  @media (max-width: @screen-size) {
-    & {
-      padding: 16px;
     }
 
   }
