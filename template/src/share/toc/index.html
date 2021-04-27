@@ -1,0 +1,13 @@
+{{#if this.l
+<ol>
+  {{#each this.list}}
+  <li>
+    {{#if this.name}}<a href="#toc-{{slugify this.name}}">{{this.name}}</a
+    >{{/if}}
+  </li>
+  {{#if this.list}}
+  {{> _toc.hbs}}
+  {{/if}}
+  {{/each}}
+</ol>
+{{/if}}

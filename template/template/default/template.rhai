@@ -22,7 +22,7 @@ for content in model.contents {
 
 model.archives = [];
 for content  in model.contents {
-    let name = content.create_time.sub_string(0,7);
+    let name = content.create_time.split("T")[0];
     if model.archives.some(|a|a.name == name) {
         let group = model.archives.filter(|a|a.name == name)[0];
         group.contents.push(content);
@@ -32,6 +32,7 @@ for content  in model.contents {
             contents: [content]
         };
         model.archives.push(group);
+        break;
     }
 }
 

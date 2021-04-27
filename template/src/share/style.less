@@ -1,17 +1,18 @@
 @import "./_mixins.less";
 @import "./_variables.less";
 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
-
 html {
+  box-sizing: border-box;
   height: 100%;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   .antialias();
+  scroll-behavior: smooth;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
@@ -37,47 +38,47 @@ h1 {
   font-style: normal;
   font-weight: 700;
   color: @foreground-color;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
   display: block;
 }
 
 h2 {
   position: relative;
-  font-size: 1rem;
+  font-size: 1.4em;
   font-weight: bold;
   text-transform: none;
   letter-spacing: normal;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
   color: @foreground-color;
   display: block;
 }
 
 h3 {
-  font-size: 0.9rem;
-  font-weight: bold;
-  text-decoration: underline;
-  color: @foreground-color;
+  font-size: 1.3em;
 }
 
-h4,
-h5,
+h4 {
+  font-size: 1.2em;
+}
+
+h5 {
+  font-size: 1.1em;
+}
+
 h6 {
-  font-size: 0.9rem;
-  font-weight: normal;
-  color: @foreground-color;
-  border-bottom: 1px dashed @foreground-color;
-  display: inline;
-  text-decoration: none;
+  font-size: 1em;
 }
 
 h3,
 h4,
 h5,
 h6 {
-  margin-top: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: @foreground-color;
+  margin-top: 0.9em;
+  margin-bottom: 0.5em;
 }
 
 hr {

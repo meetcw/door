@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>{{title}}|{{@root/site/title}}</title>
+  <link rel="stylesheet" type="text/css" href="/assets/iconfont.css">
+<script defer src="/assets/post.js"></script><link href="/assets/post.css" rel="stylesheet"></head>
+
+<body>
+  <div class="post-wrapper">
+
+    <div class="side">
+      <div class="toggle">
+      <i class="iconfont icon-dian"></i>
+      </div>
+      <div class="toc">
+        <ol>
+          {{#markdown-toc content}}
+          {{#each this}}
+          <li class="t{{item.level}}" >
+            <a href="#anchor_{{hash item/name}}">{{name}}</a>
+          </li>
+          {{/each}}
+          {{/markdown-toc}}
+        </ol>
+      </div>
+
+    </div>
+    <div class="center">
+      <header class="header-wrapper"> <a class="one" href=""> <div class="logo" style="background-image:url('{{#if @root.logo}}{{@root.logo}}{{else}}/logo.png{{/if}}')"></div> <div class="title"> <h1>{{title}}</h1> </div> </a> <div class="toggle"> <i class="iconfont icon-menu"></i> </div> <ul class="menu"> {{#each @root.menus}} <li> <a href="{{path}}" target="{{target}}">{{name}}</a> </li> {{/each}} </ul> </header> 
+      <div class="content-wrapper">
+        <article class="post">
+          <header class="header">
+            <h1 class="title"> {{title}} </h1>
+            <div class="meta">
+              <div class="date">
+                <time>{{datetime create_time}}</time>
+              </div>
+              <div class="tags">
+                <i class="iconfont icon-tag"></i>
+                {{#each tags}}
+                <a href="/tags.html#anchor_{{hash this}}" class="tag">{{this}}</a>
+                {{/each}}
+              </div>
+            </div>
+          </header>
+          <div class="content">
+            {{markdown content}}
+          </div>
+        </article>
+        <!-- Comment -->
+        <script src="https://utteranc.es/client.js"
+                repo="{{@root.raw.comment.repository}}"
+                issue-number="{{id}}"
+                theme="github-dark"
+                crossorigin="anonymous"
+                async>
+        </script>
+      </div>
+      <footer class="footer-wrapper"> <div class="footer-left"> Copyright © 2018 BAIYAN </div> <div class="footer-right"> <nav> <ul> {{#each @root.menus}} <li> <a href="{{path}}" target="{{target}}">{{name}}</a> </li> {{/each}} </ul> </nav> </div> </footer> 
+    </div>
+  </div>
+</body>
+
+</html>

@@ -51,12 +51,10 @@ function registerPage(config, name) {
   config.entry[name] = entry;
   config.plugins.push(
     new HtmlWebpackPlugin({
-      // favicon: path.resolve(basePath, "./assets/logo.png"),
       template: page,
       filename: Config.getPageFilename(name),
       chunksSortMode: "auto",
       chunks: [name],
-      // meta: { viewport:"width=device-width, initial-scale=1, maximum-scale=1", charset:"utf-8" },
       minify: false
     })
   );

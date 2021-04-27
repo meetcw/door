@@ -1,62 +1,125 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <title>{{this.title}}|{{@root.title}}</title>
+    <link rel="stylesheet" type="text/css" href="/assets/iconfont.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_2419468_qyld72qdqb.css" /> -->
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>{{this.title}}|{{@root.title}}</title>
-  <link rel="stylesheet" type="text/css" href="/assets/iconfont.css">
-</head>
+  <body>
+    <div class="root" id="root">
+        <div class="slide-toggle">
+          <div class="button" >
+            <a href="#root" ><i class="iconfont icon-top"></i></a>
+          </div>
+          <div class="button" id="toggle-silde-button">
+          <i class="iconfont icon-title"></i>
+          </div>
+        </div>
+      <div class="slide-wrapper">
 
-<body>
-  <div class="root">
-    <div class="slide-wrapper">
-      <div class="toggle">
-      </div>
-      <div class="slide-content">
-        <div class="toc">
-          <ol>
-            {{#toc this.content}}
-            {{#each this}}
-            <li class="t{{this.level}}">
-              <a href="#{{this.anchor}}">{{this.name}}</a>
-            </li>
-            {{/each}}
-            {{/toc}}
-          </ol>
+        <div class="slide-content">
+          <div class="toc">
+            <ol>
+              {{#toc this.content}} {{#each this.list}}
+              <li>
+                {{#if this.name}}<a href="#toc-{{slugify this.name}}"
+                  >{{this.name}}</a
+                >{{/if}} {{#if this.list}}
+                <ol>
+                  {{#each this.list}}
+                  <li>
+                    {{#if this.name}}<a href="#toc-{{slugify this.name}}"
+                      >{{this.name}}</a
+                    >{{/if}} {{#if this.list}}
+                    <ol>
+                      {{#each this.list}}
+                      <li>
+                        {{#if this.name}}<a href="#toc-{{slugify this.name}}"
+                          >{{this.name}}</a
+                        >{{/if}} {{#if this.list}}
+                        <ol>
+                          {{#each this.list}}
+
+                          <li>
+                            {{#if this.name}}<a
+                              href="#toc-{{slugify this.name}}"
+                              >{{this.name}}</a
+                            >{{/if}} {{#if this.list}}
+                            <ol>
+                              {{#each this.list}}
+
+                              <li>
+                                {{#if this.name}}<a
+                                  href="#toc-{{slugify this.name}}"
+                                  >{{this.name}}</a
+                                >{{/if}} {{#if this.list}}
+                                <ol>
+                                  {{#each this.list}}
+                                  <li>
+                                    {{#if this.name}}<a
+                                      href="#toc-{{slugify this.name}}"
+                                      >{{this.name}}</a
+                                    >{{/if}}
+                                  </li>
+                                  {{/each}}
+                                </ol>
+                                {{/if}}
+                              </li>
+                              {{/each}}
+                            </ol>
+                            {{/if}}
+                          </li>
+                          {{/each}}
+                        </ol>
+                        {{/if}}
+                      </li>
+                      {{/each}}
+                    </ol>
+                    {{/if}}
+                  </li>
+                  {{/each}}
+                </ol>
+                {{/if}}
+              </li>
+              {{/each}} {{/toc}}
+            </ol>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="wrapper">
-      <%= require('html-loader!../share/header/index.html').default %>
-      <div class="content-wrapper">
-        <article class="post">
-          <header class="header">
-            <h1 class="title"> {{this.title}} </h1>
-            <div class="meta">
-              <div class="date">
-                <time>{{datetime this.create_time}}</time>
+      <div class="wrapper">
+        <%= require('html-loader!../share/header/index.html').default %>
+        <div class="content-wrapper">
+          <article class="post">
+            <header class="header">
+              <h1 class="title" id="title">{{this.title}}</h1>
+              <div class="meta">
+                <div class="date">
+                  <time>{{datetime this.create_time}}</time>
+                </div>
+                <div class="tags">
+                  <i class="iconfont icon-tag"></i>
+                  {{#each this.tags}}
+                  <a
+                    href="{{path @root.address (string "tag.html#tag-" (slugify this))}}"
+                    class="tag"
+                    >#{{this}}</a
+                  >
+                  {{/each}}
+                </div>
               </div>
-              <div class="tags">
-                <i class="iconfont icon-tag"></i>
-                {{#each this.tags}}
-                <a href="{{path @root.address (string "tag.html#tag-" (slugify this))}}" class="tag">#{{this}}</a>
-                {{/each}}
-              </div>
-            </div>
-          </header>
-          <div class="content">
-            {{markdown this.content}}
-          </div>
-        </article>
+            </header>
+            <div class="content">{{markdown this.content}}</div>
+          </article>
+          <%= require("html-loader!../share/comment/index.html").default %>
+        </div>
+        <%= require("html-loader!../share/footer/index.html").default %>
       </div>
-      <!-- Comment -->
-      <script src="https://utteranc.es/client.js" repo="{{@root.raw.comment.repository}}" issue-number="{{this.id}}"
-        theme="github-dark" crossorigin="anonymous" async>
-      </script>
-      <%= require("html-loader!../share/footer/index.html").default %>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

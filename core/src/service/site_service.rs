@@ -33,32 +33,29 @@ impl<'a> SiteService<'a> {
         let mut model = serde_json::to_value(&site).unwrap();
         model["contents"] = serde_json::to_value(&contents).unwrap();
 
-        match self.template_repository.template_script(&site.template) {
-            Some(script_content) => {
-                let engine = Engine::new();
-                let script =
-                    engine.compile(&script_content).map_err(|error| {
-                        Error::new("Invalid template script.")
-                            .with_inner_error(&error)
-                    })?;
-                let mut scope = Scope::new();
-                let script_data =
-                    to_dynamic(model.clone()).map_err(|error| {
-                        Error::new("Invalid template model.")
-                            .with_inner_error(&error)
-                    })?;
+        if let Some(script_content) = self.template_repository.template_script(&site.template) {
+            let engine = Engine::new();
+            let script =
+                engine.compile(&script_content).map_err(|error| {
+                    Error::new("Invalid template script.")
+                        .with_inner_error(&error)
+                })?;
+            let mut scope = Scope::new();
+            let script_data =
+                to_dynamic(model.clone()).map_err(|error| {
+                    Error::new("Invalid template model.")
+                        .with_inner_error(&error)
+                })?;
 
-                scope.push_dynamic("model", script_data);
-                let result: Dynamic = engine
-                    .eval_ast_with_scope(&mut scope, &script)
-                    .map_err(|error| {
-                        Error::new("Invalid template script result.")
-                            .with_inner_error(&error)
-                    })?;
+            scope.push_dynamic("model", script_data);
+            let result: Dynamic = engine
+                .eval_ast_with_scope(&mut scope, &script)
+                .map_err(|error| {
+                    Error::new("Invalid template script result.")
+                        .with_inner_error(&error)
+                })?;
 
-                model = serde_json::to_value(result).unwrap();
-            }
-            None => (),
+            model = serde_json::to_value(result).unwrap();
         };
         debug!(
             "Create model\n{}",
