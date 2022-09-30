@@ -1,11 +1,12 @@
-extern crate core;
+// extern door;
+
 #[macro_use]
 extern crate log;
 extern crate simple_logger;
 extern crate structopt;
 
 use colored::*;
-use core::{ContentService, SiteService};
+use door::{ContentService, SiteService};
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 use std::str::FromStr;
@@ -43,7 +44,7 @@ enum ContentCommand {
     List,
 }
 fn main() {
-    let environment = core::Environment::new(".", ".");
+    let environment = door::Environment::new(".", ".");
     let matches = ApplicationArguments::from_args();
     let log_level = match LevelFilter::from_str(&matches.debug) {
         Ok(level) => level,
@@ -51,8 +52,8 @@ fn main() {
     };
     SimpleLogger::new()
         .with_level(LevelFilter::Off)
-        .with_module_level("core",log_level)
-        .with_module_level("door",log_level)
+        .with_module_level("core", log_level)
+        .with_module_level("door", log_level)
         .init()
         .unwrap();
     debug!("{:?}", matches);
@@ -71,6 +72,7 @@ fn main() {
         }
         DoorCommand::Clean => {
             let site_service = SiteService::new(&environment);
+
             site_service.clean()
         }
         DoorCommand::Generate => {
@@ -112,3 +114,4 @@ fn main() {
         |_| {},
     )
 }
+

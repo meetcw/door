@@ -1,7 +1,7 @@
-use include_dir::Dir;
+use include_dir::{include_dir, Dir};
 use std::path::Path;
 
-static RESOURCE_DIR: Dir = include_dir!("./resource");
+static RESOURCE_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/resource");
 
 fn all_files(root: &Dir) -> Vec<String> {
     let mut result: Vec<String> = root

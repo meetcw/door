@@ -1,0 +1,14 @@
+[package]
+name = "cli"
+version = "0.1.0"
+authors = ["Maf <wmafire@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+door= { path = "../door" }
+structopt = "0.3"
+log = "0.4.14"
+simple_logger = "1.11.0"
+colored = "1.8.0"

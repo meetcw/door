@@ -5,7 +5,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 extern crate regex;
-#[macro_use]
 extern crate include_dir;
 extern crate serde;
 #[macro_use]
@@ -15,7 +14,7 @@ extern crate filesystem;
 extern crate itertools;
 extern crate pulldown_cmark;
 extern crate roman;
-#[cfg_attr(test, macro_use)]
+#[cfg(test)]
 extern crate serde_json;
 extern crate uuid;
 extern crate rhai;
